@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "425369540582",
+    "firebase_url": "https://fir-rest-demo-ba2bc.firebaseio.com",
+    "project_id": "fir-rest-demo-ba2bc",
+    "storage_bucket": "fir-rest-demo-ba2bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425369540582:android:cae00ca7e5facd84e4e827",
+        "android_client_info": {
+          "package_name": "com.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "425369540582-trot5j1deqmgkm42dki5ajosf9q8ig7c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvcLf3Q28AdYkj-acO30p4BzHuweD5qTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "425369540582-trot5j1deqmgkm42dki5ajosf9q8ig7c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

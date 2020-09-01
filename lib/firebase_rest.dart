@@ -1,11 +1,9 @@
 library firebase_rest;
 
-import 'package:firebase_core/firebase_core.dart';
+const _baseUrl = 'https://firestore.googleapis.com/v1';
 
 class FirebaseRest {
   static final instance = FirebaseRest._();
 
-  FirebaseRest._() {
-    print(Firebase.app().options.asMap);
-  }
+  FirebaseRest._();
 }

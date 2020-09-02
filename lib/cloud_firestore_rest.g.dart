@@ -6,6 +6,31 @@ part of cloud_firestore_rest;
 // JsonSerializableGenerator
 // **************************************************************************
 
+ListDocuments _$ListDocumentsFromJson(Map<String, dynamic> json) {
+  return ListDocuments(
+    (json['documents'] as List)
+        ?.map((e) =>
+            e == null ? null : Document.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    json['nextPageToken'] as String,
+  );
+}
+
+Map<String, dynamic> _$ListDocumentsToJson(ListDocuments instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull(
+      'documents', instance.documents?.map((e) => e?.toJson())?.toList());
+  writeNotNull('nextPageToken', instance.nextPageToken);
+  return val;
+}
+
 Document _$DocumentFromJson(Map<String, dynamic> json) {
   return Document()
     ..name = json['name'] as String

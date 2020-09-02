@@ -10,6 +10,7 @@ import 'package:quiver/core.dart';
 part 'cloud_firestore_rest.g.dart';
 part 'src/api/api.dart';
 part 'src/api/document_mask.dart';
+part 'src/api/list_documents.dart';
 part 'src/collection_reference.dart';
 part 'src/document.dart';
 part 'src/document_reference.dart';

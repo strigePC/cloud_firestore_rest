@@ -66,37 +66,123 @@ class _MyHomePageState extends State<MyHomePage> {
         '/${Firebase.app().options.projectId}'
         '/databases/(default)/documents';
 
-    return FutureBuilder<Document>(
-      future: RestApi.get(
-        '$prefix/todos/xAJJW2WUihZfqKtUxQQf',
-        mask: DocumentMask(['title', 'meta.author']),
-        readTime: DateTime.now(),
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print(snapshot.error);
-          return Text(
-            'Error occurred: ${snapshot.error}',
-            style: TextStyle(color: Colors.red),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Card(
-            child: Column(
-              children: [
-                Text('GET', style: Theme.of(context).textTheme.headline5),
-                Text(snapshot.data.fields['title']?.toJson()?.toString()),
-                Text(snapshot.data.fields['body']?.toJson().toString()),
-                Text(snapshot.data.fields['meta']?.toJson().toString()),
-              ],
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('GET', style: Theme.of(context).textTheme.headline5),
+            SizedBox(height: 8),
+            FutureBuilder<Document>(
+              future: RestApi.get(
+                '$prefix/todos/sRdEBPyod3jQsZsuT5Yb',
+                mask: DocumentMask(['title', 'meta.author', 'bullets']),
+                readTime: DateTime.now(),
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return Text(
+                    'Error occurred: ${snapshot.error}',
+                    style: TextStyle(color: Colors.red),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return _buildFields(snapshot.data.fields);
+                }
+                return Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
-          );
-        }
-
-        return Center(child: CircularProgressIndicator());
-      },
+          ],
+        ),
+      ),
     );
+  }
+
+  Widget _buildFields(Map<String, Value> fields) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            children: fields.entries
+                .map((field) => TextSpan(
+                      children: [
+                        TextSpan(
+                          text: field.key + ': ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        _buildField(field.value),
+                        TextSpan(text: '\n'),
+                      ],
+                    ))
+                .toList(),
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+      ],
+    );
+  }
+
+  InlineSpan _buildField(Value value) {
+    InlineSpan widget;
+    if (value.stringValue != null) {
+      widget = TextSpan(text: value.stringValue + ',');
+    } else if (value.booleanValue != null) {
+      widget = TextSpan(text: '${value.booleanValue},');
+    } else if (value.doubleValue != null) {
+      widget = TextSpan(text: '${value.doubleValue},');
+    } else if (value.integerValue != null) {
+      widget = TextSpan(text: value.integerValue + ',');
+    } else if (value.timestampValue != null) {
+      widget = TextSpan(text: value.timestampValue + ',');
+    } else if (value.bytesValue != null) {
+      widget = TextSpan(text: value.bytesValue + ',');
+    } else if (value.arrayValue != null) {
+      widget = TextSpan(
+        children: [
+          TextSpan(text: '[\n'),
+          ...value.arrayValue.values
+              .map((value) => _buildField(value))
+              .expand((element) => [
+                    TextSpan(text: '\t\t'),
+                    element,
+                    TextSpan(text: '\n'),
+                  ])
+              .toList(),
+          TextSpan(text: '],'),
+        ],
+      );
+    } else if (value.mapValue != null) {
+      widget = TextSpan(children: [
+        TextSpan(text: '{\n'),
+        ...value.mapValue.fields.entries
+            .map((field) => TextSpan(
+                  children: [
+                    TextSpan(
+                      text: field.key + ': ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    _buildField(field.value),
+                  ],
+                ))
+            .expand((element) => [
+                  TextSpan(text: '\t\t'),
+                  element,
+                  TextSpan(text: '\n'),
+                ])
+            .toList(),
+        TextSpan(text: '},'),
+      ]);
+    } else {
+      widget = TextSpan(text: value.toJson().toString());
+    }
+    return widget;
   }
 
   Widget _buildListRequestCard() {
@@ -104,70 +190,53 @@ class _MyHomePageState extends State<MyHomePage> {
         '/${Firebase.app().options.projectId}'
         '/databases/(default)/documents';
 
-    return FutureBuilder<ListDocuments>(
-      future: RestApi.list(
-        prefix,
-        'todos',
-        mask: DocumentMask(['title', 'body']),
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print(snapshot.error);
-          return Text(
-            'Error occurred: ${snapshot.error}',
-            style: TextStyle(color: Colors.red),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Card(
-            child: Column(
-              children: [
-                Text('LIST', style: Theme.of(context).textTheme.headline5),
-                Column(
-                  children: snapshot.data.documents
-                      .map((doc) => Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text(doc.fields['title']
-                                          ?.toJson()
-                                          ?.toString()),
-                                      Text(doc.fields['body']
-                                          ?.toJson()
-                                          .toString()),
-                                      Text(doc.fields['meta']
-                                          ?.toJson()
-                                          .toString()),
-                                    ],
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete),
-                                    color: Colors.red,
-                                    onPressed: () {
-                                      RestApi.delete(doc.name);
-                                    },
-                                  )
-                                ],
-                              ),
-                              Divider(),
-                            ],
-                          ))
-                      .toList(),
-                ),
-              ],
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('LIST', style: Theme.of(context).textTheme.headline5),
+            SizedBox(height: 8),
+            FutureBuilder<ListDocuments>(
+              future: RestApi.list(
+                prefix,
+                'todos',
+                mask: DocumentMask(['title', 'body']),
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return Text(
+                    'Error occurred: ${snapshot.error}',
+                    style: TextStyle(color: Colors.red),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: snapshot.data.documents
+                        .map((doc) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildFields(doc.fields),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () => RestApi.delete(doc.name),
+                                )
+                              ],
+                            ))
+                        .expand((element) => [element, Divider()])
+                        .toList(),
+                  );
+                }
+                return Center(child: CircularProgressIndicator());
+              },
             ),
-          );
-        }
-
-        return Center(child: CircularProgressIndicator());
-      },
+          ],
+        ),
+      ),
     );
   }
 }

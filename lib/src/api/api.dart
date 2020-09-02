@@ -195,14 +195,71 @@ class RestApi {
     final res = await http.get(url.toString(), headers: headers);
     final json = jsonDecode(res.body);
 
-    if (json['error'] != null) {
+    if (json is List && json.isNotEmpty && json[0]['error'] != null) {
       throw FirebaseException(
         plugin: 'RestAPI.list',
+        code: json[0]['error']['code'].toString(),
+        message: json[0]['error']['message'],
+      );
+    }
+
+    return ListDocuments.fromJson(json);
+  }
+
+  static Future<Document> patch(
+    String name, {
+    DocumentMask updateMask,
+    DocumentMask mask,
+    Precondition currentDocument,
+    Document body,
+    Map<String, String> headers,
+  }) async {
+    _assertPathFormat(name);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(name);
+
+    // Handling query parameters
+    final queryParameters = <String>[];
+
+    if (updateMask != null) {
+      queryParameters.addAll(updateMask.fieldPaths
+          .map((fieldPath) => 'updateMask.fieldPaths=$fieldPath'));
+    }
+    if (mask != null) {
+      queryParameters.addAll(
+          mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
+    }
+    if (currentDocument != null) {
+      if (currentDocument.exists != null) {
+        queryParameters.add('currentDocument.exists=${currentDocument.exists}');
+      } else if (currentDocument.updateTime != null) {
+        queryParameters.add(
+            'currentDocument.updateTime=${currentDocument.updateTime.toUtc().toIso8601String()}');
+      }
+    }
+
+    // Appending query parameters to URL
+    if (queryParameters.isNotEmpty) {
+      url
+        ..write('?')
+        ..writeAll(queryParameters, '&');
+    }
+
+    final res = await http.patch(
+      url.toString(),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    final json = jsonDecode(res.body);
+
+    if (json['error'] != null) {
+      throw FirebaseException(
+        plugin: 'RestAPI.patch',
         code: json['error']['code'].toString(),
         message: json['error']['message'],
       );
     }
 
-    return ListDocuments.fromJson(json);
+    return Document.fromJson(json);
   }
 }

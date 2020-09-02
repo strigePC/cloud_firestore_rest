@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import './widgets/create_document_request_card.dart';
 import './widgets/get_request_card.dart';
 import './widgets/list_request_card.dart';
+import './widgets/patch_request_card.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,35 +23,23 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final _initialize = Firebase.initializeApp();
-
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
     return Scaffold(
       appBar: AppBar(
         title: Text('Firebase REST Demo'),
       ),
-      body: FutureBuilder(
-        future: _initialize,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            //  TODO handle errors
-            print(snapshot.error);
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return ListView(
+      body: Firebase.apps.isNotEmpty
+          ? ListView(
               children: <Widget>[
                 CreateDocumentRequestCard(),
+                PatchRequestCard(),
                 GetRequestCard(),
                 ListRequestCard(),
               ],
-            );
-          }
-
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+            )
+          : Center(child: CircularProgressIndicator()),
     );
   }
 }

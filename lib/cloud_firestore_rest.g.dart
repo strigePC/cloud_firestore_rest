@@ -32,12 +32,13 @@ Map<String, dynamic> _$ListDocumentsToJson(ListDocuments instance) {
 }
 
 Document _$DocumentFromJson(Map<String, dynamic> json) {
-  return Document()
-    ..name = json['name'] as String
-    ..fields = (json['fields'] as Map<String, dynamic>)?.map(
+  return Document(
+    name: json['name'] as String,
+    fields: (json['fields'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(
           k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
-    )
+    ),
+  )
     ..createTime = json['createTime'] == null
         ? null
         : DateTime.parse(json['createTime'] as String)
@@ -346,24 +347,25 @@ Map<String, dynamic> _$StructuredQueryToJson(StructuredQuery instance) {
 }
 
 Value _$ValueFromJson(Map<String, dynamic> json) {
-  return Value()
-    ..nullValue = json['nullValue'] as bool
-    ..booleanValue = json['booleanValue'] as bool
-    ..integerValue = json['integerValue'] as String
-    ..doubleValue = (json['doubleValue'] as num)?.toDouble()
-    ..timestampValue = json['timestampValue'] as String
-    ..stringValue = json['stringValue'] as String
-    ..bytesValue = json['bytesValue'] as String
-    ..referenceValue = json['referenceValue'] as String
-    ..geoPointValue = json['geoPointValue'] == null
+  return Value(
+    mapValue: json['mapValue'] == null
         ? null
-        : GeoPoint.fromJson(json['geoPointValue'] as Map<String, dynamic>)
-    ..arrayValue = json['arrayValue'] == null
+        : MapValue.fromJson(json['mapValue'] as Map<String, dynamic>),
+    arrayValue: json['arrayValue'] == null
         ? null
-        : ArrayValue.fromJson(json['arrayValue'] as Map<String, dynamic>)
-    ..mapValue = json['mapValue'] == null
+        : ArrayValue.fromJson(json['arrayValue'] as Map<String, dynamic>),
+    bytesValue: json['bytesValue'] as String,
+    timestampValue: json['timestampValue'] as String,
+    integerValue: json['integerValue'] as String,
+    doubleValue: (json['doubleValue'] as num)?.toDouble(),
+    nullValue: json['nullValue'] as bool,
+    booleanValue: json['booleanValue'] as bool,
+    stringValue: json['stringValue'] as String,
+    referenceValue: json['referenceValue'] as String,
+    geoPointValue: json['geoPointValue'] == null
         ? null
-        : MapValue.fromJson(json['mapValue'] as Map<String, dynamic>);
+        : GeoPoint.fromJson(json['geoPointValue'] as Map<String, dynamic>),
+  );
 }
 
 Map<String, dynamic> _$ValueToJson(Value instance) {

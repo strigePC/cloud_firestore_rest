@@ -2,19 +2,31 @@ part of cloud_firestore_rest;
 
 @JsonSerializable()
 class Value {
-  bool nullValue;
-  bool booleanValue;
-  String integerValue;
-  double doubleValue;
-  String timestampValue;
-  String stringValue;
-  String bytesValue;
-  String referenceValue;
-  GeoPoint geoPointValue;
-  ArrayValue arrayValue;
-  MapValue mapValue;
+  final bool nullValue;
+  final bool booleanValue;
+  final String integerValue;
+  final double doubleValue;
+  final String timestampValue;
+  final String stringValue;
+  final String bytesValue;
+  final String referenceValue;
+  final GeoPoint geoPointValue;
+  final ArrayValue arrayValue;
+  final MapValue mapValue;
 
-  Value();
+  Value({
+    this.mapValue,
+    this.arrayValue,
+    this.bytesValue,
+    this.timestampValue,
+    this.integerValue,
+    this.doubleValue,
+    this.nullValue,
+    this.booleanValue,
+    this.stringValue,
+    this.referenceValue,
+    this.geoPointValue,
+  });
 
   factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
 

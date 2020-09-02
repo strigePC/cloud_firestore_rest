@@ -7,7 +7,7 @@ class Document {
   DateTime createTime;
   DateTime updateTime;
 
-  Document();
+  Document({this.name, this.fields});
 
   factory Document.fromJson(Map<String, dynamic> json) =>
       _$DocumentFromJson(json);

@@ -24,6 +24,48 @@ class RestApi {
     throw UnimplementedError();
   }
 
+  /// Creates a new document.
+  /// HTTP request
+  /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/**}/{collectionId}
+  static Future<Document> createDocument(
+    String parent,
+    String collectionId, {
+    String documentId,
+    DocumentMask mask,
+    Document body,
+    Map<String, String> headers,
+  }) async {
+    final path = '$parent/$collectionId';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(path);
+
+    final queryParameters = <String>[];
+
+    if (documentId != null) queryParameters.add('documentId=$documentId');
+    if (mask != null) {
+      queryParameters.addAll(
+          mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
+    }
+
+    final res = await http.post(
+      url.toString(),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    final json = jsonDecode(res.body);
+
+    if (json['error'] != null) {
+      throw FirebaseException(
+        plugin: 'RestAPI.createDocument',
+        code: json['error']['code'].toString(),
+        message: json['error']['message'],
+      );
+    }
+
+    return Document.fromJson(json);
+  }
+
   /// Deletes a document
   /// HTTP request
   /// DELETE https://firestore.googleapis.com/v1/{name=projects/*/databases/*/documents/*/**}
@@ -50,7 +92,7 @@ class RestApi {
 
     if (json['error'] != null) {
       throw FirebaseException(
-        plugin: 'RestAPI.get',
+        plugin: 'RestAPI.delete',
         code: json['error']['code'].toString(),
         message: json['error']['message'],
       );

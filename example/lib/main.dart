@@ -223,7 +223,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                 IconButton(
                                   icon: Icon(Icons.delete),
                                   color: Colors.red,
-                                  onPressed: () => RestApi.delete(doc.name),
+                                  onPressed: () async {
+                                    try {
+                                      await RestApi.delete(doc.name);
+                                    } on FirebaseException catch (e) {
+                                      Scaffold.of(context).showSnackBar(
+                                        SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(e.message),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 )
                               ],
                             ))

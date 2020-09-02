@@ -24,16 +24,16 @@ class RestApi {
     throw UnimplementedError();
   }
 
-  static void _assertTimestampFormat(String timestamp) {
-    //  TODO implement _assertBytesFormat
-    throw UnimplementedError();
-  }
-
+  /// Gets a single document.
+  /// HTTP request
+  /// GET https://firestore.googleapis.com/v1/{name=projects/*/databases/*/documents/*/**}
+  ///
+  /// The URL uses gRPC Transcoding syntax.
   static Future<Document> get(
     String name, {
     DocumentMask mask,
     String transaction,
-    String readTime,
+    DateTime readTime,
     Map<String, String> headers,
   }) async {
     _assertNameFormat(name);
@@ -47,8 +47,7 @@ class RestApi {
     }
     if (transaction != null) _assertBytesFormat(transaction);
     if (readTime != null) {
-      _assertTimestampFormat(readTime);
-      queryParameters.add('readTime=$readTime');
+      queryParameters.add('readTime=${readTime.toUtc().toIso8601String()}');
     }
 
     if (queryParameters.isNotEmpty) {

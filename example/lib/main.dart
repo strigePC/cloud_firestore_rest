@@ -55,12 +55,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     future: RestApi.get(
                       'projects/${Firebase.app().options.projectId}/databases/(default)/documents/todos/xAJJW2WUihZfqKtUxQQf',
                       mask: DocumentMask(['title', 'meta.author']),
+                      readTime: DateTime.now(),
                     ),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         print(snapshot.error);
                         return Text(
-                          'Error occurred',
+                          'Error occurred: ${snapshot.error}',
                           style: TextStyle(color: Colors.red),
                         );
                       }

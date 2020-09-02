@@ -206,6 +206,9 @@ class RestApi {
     return ListDocuments.fromJson(json);
   }
 
+  /// Updates or inserts a document.
+  /// HTTP request
+  /// PATCH https://firestore.googleapis.com/v1/{document.name=projects/*/databases/*/documents/*/**}
   static Future<Document> patch(
     String name, {
     DocumentMask updateMask,

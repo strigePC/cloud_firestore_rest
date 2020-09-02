@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
   InlineSpan _buildField(Value value) {
     InlineSpan widget;
     if (value.stringValue != null) {
-      widget = TextSpan(text: value.stringValue + ',');
+      widget = TextSpan(text: '"${value.stringValue}",');
     } else if (value.booleanValue != null) {
       widget = TextSpan(text: '${value.booleanValue},');
     } else if (value.doubleValue != null) {
@@ -216,29 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: snapshot.data.documents
-                        .map((doc) => Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildFields(doc.fields),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  color: Colors.red,
-                                  onPressed: () async {
-                                    try {
-                                      await RestApi.delete(doc.name);
-                                    } on FirebaseException catch (e) {
-                                      Scaffold.of(context).showSnackBar(
-                                        SnackBar(
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(e.message),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                )
-                              ],
-                            ))
-                        .expand((element) => [element, Divider()])
+                        .map((doc) => _buildDocumentEntry(doc, context))
                         .toList(),
                   );
                 }
@@ -248,6 +226,38 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Column _buildDocumentEntry(Document doc, BuildContext context) {
+    return Column(
+      children: [
+        Text(doc.name, style: Theme.of(context).textTheme.caption),
+        SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildFields(doc.fields),
+            IconButton(
+              icon: Icon(Icons.delete),
+              color: Colors.red,
+              onPressed: () async {
+                try {
+                  await RestApi.delete(doc.name);
+                } on FirebaseException catch (e) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: Text(e.message),
+                    ),
+                  );
+                }
+              },
+            )
+          ],
+        ),
+        Divider(),
+      ],
     );
   }
 }

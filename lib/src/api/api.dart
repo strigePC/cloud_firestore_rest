@@ -97,7 +97,7 @@ class RestApi {
     if (json['error'] != null) {
       throw FirebaseException(
         plugin: 'RestAPI.get',
-        code: json['error']['code'],
+        code: json['error']['code'].toString(),
         message: json['error']['message'],
       );
     }
@@ -156,7 +156,7 @@ class RestApi {
     if (json['error'] != null) {
       throw FirebaseException(
         plugin: 'RestAPI.list',
-        code: json['error']['code'],
+        code: json['error']['code'].toString(),
         message: json['error']['message'],
       );
     }

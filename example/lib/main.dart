@@ -62,9 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildGetRequestCard() {
+    final prefix = 'projects'
+        '/${Firebase.app().options.projectId}'
+        '/databases/(default)/documents';
+
     return FutureBuilder<Document>(
       future: RestApi.get(
-        'projects/${Firebase.app().options.projectId}/databases/(default)/documents/todos/xAJJW2WUihZfqKtUxQQf',
+        '$prefix/todos/xAJJW2WUihZfqKtUxQQf',
         mask: DocumentMask(['title', 'meta.author']),
         readTime: DateTime.now(),
       ),
@@ -96,9 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListRequestCard() {
+    final prefix = 'projects'
+        '/${Firebase.app().options.projectId}'
+        '/databases/(default)/documents';
+
     return FutureBuilder<ListDocuments>(
       future: RestApi.list(
-        'projects/${Firebase.app().options.projectId}/databases/(default)/documents',
+        prefix,
         'todos',
         mask: DocumentMask(['title', 'body']),
       ),
@@ -117,16 +125,42 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Text('LIST', style: Theme.of(context).textTheme.headline5),
                 Column(
-                  children: snapshot.data.documents.map((doc) => Column(
-                    children: [
-                      Text(doc.fields['title']?.toJson()?.toString()),
-                      Text(doc.fields['body']?.toJson().toString()),
-                      Text(doc.fields['meta']?.toJson().toString()),
-                      Divider(),
-                    ],
-                  )).toList(),
+                  children: snapshot.data.documents
+                      .map((doc) => Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(doc.fields['title']
+                                          ?.toJson()
+                                          ?.toString()),
+                                      Text(doc.fields['body']
+                                          ?.toJson()
+                                          .toString()),
+                                      Text(doc.fields['meta']
+                                          ?.toJson()
+                                          .toString()),
+                                    ],
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      RestApi.delete(doc.name);
+                                    },
+                                  )
+                                ],
+                              ),
+                              Divider(),
+                            ],
+                          ))
+                      .toList(),
                 ),
-                Divider(),
               ],
             ),
           );

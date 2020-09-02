@@ -11,6 +11,7 @@ part 'cloud_firestore_rest.g.dart';
 part 'src/api/api.dart';
 part 'src/api/document_mask.dart';
 part 'src/api/list_documents.dart';
+part 'src/api/precondition.dart';
 part 'src/collection_reference.dart';
 part 'src/document.dart';
 part 'src/document_reference.dart';
@@ -31,9 +32,3 @@ part 'src/structured_query/value.dart';
 part 'types/geo_point.dart';
 
 const _baseUrl = 'https://firestore.googleapis.com/v1';
-
-class CloudFirestoreRest {
-  static final instance = CloudFirestoreRest._();
-
-  CloudFirestoreRest._();
-}

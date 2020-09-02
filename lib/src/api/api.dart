@@ -265,4 +265,53 @@ class RestApi {
 
     return Document.fromJson(json);
   }
+
+  /// Runs a query.
+  /// HTTP request
+  /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents}:runQuery
+  static Future<RunQuery> runQuery(
+    String parent, {
+    StructuredQuery structuredQuery,
+    String transaction,
+    TransactionOptions newTransaction,
+    DateTime readTime,
+    Map<String, String> headers,
+  }) async {
+    assert(
+      (transaction != null && newTransaction == null && readTime == null) ||
+          (transaction == null && newTransaction != null && readTime == null) ||
+          (transaction == null && newTransaction == null && readTime != null),
+      'You can set only one of transaction, newTransaction and readTime',
+    );
+    _assertPathFormat(parent);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(parent);
+
+    final body = <String, dynamic>{'structuredQuery': structuredQuery};
+    if (transaction != null) {
+      _assertBytesFormat(transaction);
+      body['transaction'] = transaction;
+    } else if (newTransaction != null) {
+      body['newTransaction'] = newTransaction;
+    } else if (readTime != null) {
+      body['readTime'] = readTime.toUtc().toIso8601String();
+    }
+
+    final res = await http.post(
+      url.toString(),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    final json = jsonDecode(res.body);
+
+    if (json['error'] != null) {
+      throw FirebaseException(
+        plugin: 'RestAPI.runQuery',
+        code: json['error']['code'].toString(),
+        message: json['error']['message'],
+      );
+    }
+
+    return RunQuery.fromJson(json);
+  }
 }

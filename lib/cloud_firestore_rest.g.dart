@@ -31,6 +31,98 @@ Map<String, dynamic> _$ListDocumentsToJson(ListDocuments instance) {
   return val;
 }
 
+RunQuery _$RunQueryFromJson(Map<String, dynamic> json) {
+  return RunQuery(
+    json['transaction'] as String,
+    json['document'] == null
+        ? null
+        : Document.fromJson(json['document'] as Map<String, dynamic>),
+    json['readTime'] == null
+        ? null
+        : DateTime.parse(json['readTime'] as String),
+    json['skippedResults'] as int,
+  );
+}
+
+Map<String, dynamic> _$RunQueryToJson(RunQuery instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('transaction', instance.transaction);
+  writeNotNull('document', instance.document?.toJson());
+  writeNotNull('readTime', instance.readTime?.toIso8601String());
+  writeNotNull('skippedResults', instance.skippedResults);
+  return val;
+}
+
+TransactionOptions _$TransactionOptionsFromJson(Map<String, dynamic> json) {
+  return TransactionOptions(
+    json['readOnly'] == null
+        ? null
+        : ReadOnly.fromJson(json['readOnly'] as Map<String, dynamic>),
+    json['readWrite'] == null
+        ? null
+        : ReadWrite.fromJson(json['readWrite'] as Map<String, dynamic>),
+  );
+}
+
+Map<String, dynamic> _$TransactionOptionsToJson(TransactionOptions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('readOnly', instance.readOnly?.toJson());
+  writeNotNull('readWrite', instance.readWrite?.toJson());
+  return val;
+}
+
+ReadOnly _$ReadOnlyFromJson(Map<String, dynamic> json) {
+  return ReadOnly(
+    json['readTime'] as String,
+  );
+}
+
+Map<String, dynamic> _$ReadOnlyToJson(ReadOnly instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('readTime', instance.readTime);
+  return val;
+}
+
+ReadWrite _$ReadWriteFromJson(Map<String, dynamic> json) {
+  return ReadWrite(
+    json['retryTransaction'] as String,
+  );
+}
+
+Map<String, dynamic> _$ReadWriteToJson(ReadWrite instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('retryTransaction', instance.retryTransaction);
+  return val;
+}
+
 Document _$DocumentFromJson(Map<String, dynamic> json) {
   return Document(
     name: json['name'] as String,

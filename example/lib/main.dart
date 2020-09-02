@@ -1,3 +1,4 @@
+import 'package:cloud_firestore_rest/cloud_firestore_rest.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -29,14 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   final _initialize = Firebase.initializeApp();
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +51,41 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'You have pushed the button this many times:',
-                  ),
-                  Text(
-                    '$_counter',
-                    style: Theme.of(context).textTheme.headline4,
+                  FutureBuilder<Document>(
+                    future: RestApi.get(
+                      'projects/${Firebase.app().options.projectId}/databases/(default)/documents/todos/xAJJW2WUihZfqKtUxQQf',
+                      mask: DocumentMask(['title', 'meta.author']),
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        print(snapshot.error);
+                        return Text(
+                          'Error occurred',
+                          style: TextStyle(color: Colors.red),
+                        );
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        print(snapshot.data.toJson());
+                        return Card(
+                          child: Column(
+                            children: [
+                              Text(snapshot.data.fields['title']
+                                  ?.toJson()
+                                  ?.toString()),
+                              Text(snapshot.data.fields['body']
+                                  ?.toJson()
+                                  .toString()),
+                              Text(snapshot.data.fields['meta']
+                                  ?.toJson()
+                                  .toString()),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return Center(child: CircularProgressIndicator());
+                    },
                   ),
                 ],
               ),
@@ -71,11 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return Center(child: CircularProgressIndicator());
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }

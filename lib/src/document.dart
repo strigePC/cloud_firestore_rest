@@ -4,6 +4,13 @@ part of cloud_firestore_rest;
 class Document {
   String name;
   Map<String, Value> fields;
-  String createTime;
-  String updateTime;
+  DateTime createTime;
+  DateTime updateTime;
+
+  Document();
+
+  factory Document.fromJson(Map<String, dynamic> json) =>
+      _$DocumentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DocumentToJson(this);
 }

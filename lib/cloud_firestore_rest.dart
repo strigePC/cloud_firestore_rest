@@ -1,10 +1,15 @@
 library cloud_firestore_rest;
 
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:quiver/core.dart';
 
 part 'cloud_firestore_rest.g.dart';
+part 'src/api/api.dart';
+part 'src/api/document_mask.dart';
 part 'src/collection_reference.dart';
 part 'src/document.dart';
 part 'src/document_reference.dart';

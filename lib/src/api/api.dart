@@ -19,11 +19,6 @@ class RestApi {
         'but got $path');
   }
 
-  static void _assertBytesFormat(String bytes) {
-    //  TODO implement _assertBytesFormat
-    throw UnimplementedError();
-  }
-
   /// Creates a new document.
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/**}/{collectionId}
@@ -105,7 +100,7 @@ class RestApi {
   static Future<Document> get(
     String name, {
     DocumentMask mask,
-    String transaction,
+    Uint64List transaction,
     DateTime readTime,
     Map<String, String> headers,
   }) async {
@@ -121,7 +116,9 @@ class RestApi {
       queryParameters.addAll(
           mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
     }
-    if (transaction != null) _assertBytesFormat(transaction);
+    if (transaction != null) {
+      queryParameters.add('transaction=${base64Encode(transaction)}');
+    }
     if (readTime != null) {
       queryParameters.add('readTime=${readTime.toUtc().toIso8601String()}');
     }
@@ -158,7 +155,7 @@ class RestApi {
     String orderBy,
     DocumentMask mask,
     bool showMissing,
-    String transaction,
+    Uint64List transaction,
     DateTime readTime,
     Map<String, String> headers,
   }) async {
@@ -180,7 +177,9 @@ class RestApi {
           mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
     }
     if (showMissing != null) queryParameters.add('showMissing=$showMissing');
-    if (transaction != null) _assertBytesFormat(transaction);
+    if (transaction != null) {
+      queryParameters.add('transaction=${base64Encode(transaction)}');
+    }
     if (readTime != null) {
       queryParameters.add('readTime=${readTime.toUtc().toIso8601String()}');
     }
@@ -272,7 +271,7 @@ class RestApi {
   static Future<RunQuery> runQuery(
     String parent, {
     StructuredQuery structuredQuery,
-    String transaction,
+    Uint64List transaction,
     TransactionOptions newTransaction,
     DateTime readTime,
     Map<String, String> headers,
@@ -289,8 +288,7 @@ class RestApi {
 
     final body = <String, dynamic>{'structuredQuery': structuredQuery};
     if (transaction != null) {
-      _assertBytesFormat(transaction);
-      body['transaction'] = transaction;
+      body['transaction'] = base64Encode(transaction);
     } else if (newTransaction != null) {
       body['newTransaction'] = newTransaction;
     } else if (readTime != null) {

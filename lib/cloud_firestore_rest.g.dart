@@ -178,7 +178,13 @@ Map<String, dynamic> _$CollectionSelectorToJson(CollectionSelector instance) {
 }
 
 Cursor _$CursorFromJson(Map<String, dynamic> json) {
-  return Cursor()..before = json['before'] as bool;
+  return Cursor(
+    (json['values'] as List)
+        ?.map(
+            (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    json['before'] as bool,
+  );
 }
 
 Map<String, dynamic> _$CursorToJson(Cursor instance) {
@@ -190,6 +196,7 @@ Map<String, dynamic> _$CursorToJson(Cursor instance) {
     }
   }
 
+  writeNotNull('values', instance.values?.map((e) => e?.toJson())?.toList());
   writeNotNull('before', instance.before);
   return val;
 }
@@ -364,11 +371,12 @@ const _$UnaryOperatorEnumMap = {
 };
 
 Order _$OrderFromJson(Map<String, dynamic> json) {
-  return Order()
-    ..field = json['field'] == null
+  return Order(
+    json['field'] == null
         ? null
-        : FieldReference.fromJson(json['field'] as Map<String, dynamic>)
-    ..direction = _$enumDecodeNullable(_$DirectionEnumMap, json['direction']);
+        : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
+    _$enumDecodeNullable(_$DirectionEnumMap, json['direction']),
+  );
 }
 
 Map<String, dynamic> _$OrderToJson(Order instance) {
@@ -406,9 +414,10 @@ StructuredQuery _$StructuredQueryFromJson(Map<String, dynamic> json) {
     ..where = json['where'] == null
         ? null
         : Filter.fromJson(json['where'] as Map<String, dynamic>)
-    ..orderBy = json['orderBy'] == null
-        ? null
-        : Order.fromJson(json['orderBy'] as Map<String, dynamic>)
+    ..orderBy = (json['orderBy'] as List)
+        ?.map(
+            (e) => e == null ? null : Order.fromJson(e as Map<String, dynamic>))
+        ?.toList()
     ..startAt = json['startAt'] == null
         ? null
         : Cursor.fromJson(json['startAt'] as Map<String, dynamic>)
@@ -430,7 +439,7 @@ Map<String, dynamic> _$StructuredQueryToJson(StructuredQuery instance) {
 
   writeNotNull('select', instance.select?.toJson());
   writeNotNull('where', instance.where?.toJson());
-  writeNotNull('orderBy', instance.orderBy?.toJson());
+  writeNotNull('orderBy', instance.orderBy?.map((e) => e?.toJson())?.toList());
   writeNotNull('startAt', instance.startAt?.toJson());
   writeNotNull('endAt', instance.endAt?.toJson());
   writeNotNull('offset', instance.offset);
@@ -484,11 +493,12 @@ Map<String, dynamic> _$ValueToJson(Value instance) {
 }
 
 ArrayValue _$ArrayValueFromJson(Map<String, dynamic> json) {
-  return ArrayValue()
-    ..values = (json['values'] as List)
+  return ArrayValue(
+    (json['values'] as List)
         ?.map(
             (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
-        ?.toList();
+        ?.toList(),
+  );
 }
 
 Map<String, dynamic> _$ArrayValueToJson(ArrayValue instance) {
@@ -505,11 +515,12 @@ Map<String, dynamic> _$ArrayValueToJson(ArrayValue instance) {
 }
 
 MapValue _$MapValueFromJson(Map<String, dynamic> json) {
-  return MapValue()
-    ..fields = (json['fields'] as Map<String, dynamic>)?.map(
+  return MapValue(
+    (json['fields'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(
           k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
-    );
+    ),
+  );
 }
 
 Map<String, dynamic> _$MapValueToJson(MapValue instance) {
@@ -527,9 +538,10 @@ Map<String, dynamic> _$MapValueToJson(MapValue instance) {
 }
 
 GeoPoint _$GeoPointFromJson(Map<String, dynamic> json) {
-  return GeoPoint()
-    ..lat = (json['lat'] as num)?.toDouble()
-    ..lng = (json['lng'] as num)?.toDouble();
+  return GeoPoint(
+    (json['lat'] as num)?.toDouble(),
+    (json['lng'] as num)?.toDouble(),
+  );
 }
 
 Map<String, dynamic> _$GeoPointToJson(GeoPoint instance) {

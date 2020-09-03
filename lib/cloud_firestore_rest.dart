@@ -1,6 +1,7 @@
 library cloud_firestore_rest;
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;

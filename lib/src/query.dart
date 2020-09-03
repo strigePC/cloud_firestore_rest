@@ -79,17 +79,15 @@ class Query {
   }
 
   /// Common handler for all non-document based cursor queries.
-  List<dynamic> _assertQueryCursorValues(List<dynamic> fields) {
+  void _assertQueryCursorValues(List<dynamic> fields) {
     assert(fields != null);
-    // List<List<dynamic>> orders = List.from(parameters['orderBy']);
 
-    // assert(fields.length <= orders.length,
-    // "Too many arguments provided. The number of arguments must be less than or equal to the number of orderBy() clauses.");
-
-    // return fields;
-
-    //  TODO: implement _assertQueryCursorValues
-    throw UnimplementedError();
+    assert(
+      fields.length <= structuredQuery.orderBy.length,
+      "Too many arguments provided. "
+      "The number of arguments must be less than or equal to the number of "
+      "orderBy() clauses.",
+    );
   }
 
   /// Asserts that the query [field] is either a String or a [FieldPath].
@@ -131,12 +129,12 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "end" query modifiers.
-  Query endAt(List<dynamic> values) {
-    // _assertQueryCursorValues(values);
-    // return Query._(firestore, _delegate.endAt(values));
-
-    //  TODO: implement endAt
-    throw UnimplementedError();
+  void endAt(List<dynamic> values) {
+    _assertQueryCursorValues(values);
+    structuredQuery.endAt = Cursor(
+      values.map((value) => Value.fromValue(value)).toList(),
+      false,
+    );
   }
 
   /// Creates and returns a new [Query] that ends before the provided document
@@ -160,12 +158,12 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "end" query modifiers.
-  Query endBefore(List<dynamic> values) {
-    // _assertQueryCursorValues(values);
-    // return Query._(firestore, _delegate.endBefore(values));
-
-    //  TODO: implement endBefore()
-    throw UnimplementedError();
+  void endBefore(List<dynamic> values) {
+    _assertQueryCursorValues(values);
+    structuredQuery.endAt = Cursor(
+      values.map((value) => Value.fromValue(value)).toList(),
+      true,
+    );
   }
 
   /// Fetch the documents for this query.
@@ -304,12 +302,12 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "start" query modifiers.
-  Query startAfter(List<dynamic> values) {
+  void startAfter(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    // return Query._(firestore, _delegate.startAfter(values));
-
-    //  TODO: implement startAfter()
-    throw UnimplementedError();
+    structuredQuery.startAt = Cursor(
+      values.map((value) => Value.fromValue(value)).toList(),
+      false,
+    );
   }
 
   /// Creates and returns a new [Query] that starts at the provided document
@@ -333,12 +331,12 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "start" query modifiers.
-  Query startAt(List<dynamic> values) {
+  void startAt(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    // return Query._(firestore, _delegate.startAt(values));
-
-    //  TODO: implement startAt()
-    throw UnimplementedError();
+    structuredQuery.startAt = Cursor(
+      values.map((value) => Value.fromValue(value)).toList(),
+      true,
+    );
   }
 
   /// Creates and returns a new [Query] with additional filter on specified

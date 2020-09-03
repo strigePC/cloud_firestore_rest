@@ -2,10 +2,10 @@ part of cloud_firestore_rest;
 
 @JsonSerializable()
 class GeoPoint {
-  double lat;
-  double lng;
+  final double lat;
+  final double lng;
 
-  GeoPoint();
+  GeoPoint(this.lat, this.lng);
 
   factory GeoPoint.fromJson(Map<String, dynamic> json) =>
       _$GeoPointFromJson(json);

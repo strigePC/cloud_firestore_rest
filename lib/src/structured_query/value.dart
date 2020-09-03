@@ -26,7 +26,20 @@ class Value {
     this.stringValue,
     this.referenceValue,
     this.geoPointValue,
-  });
+  }) : assert(
+          (mapValue != null) ^
+              (arrayValue != null) ^
+              (bytesValue != null) ^
+              (timestampValue != null) ^
+              (integerValue != null) ^
+              (doubleValue != null) ^
+              (nullValue != null) ^
+              (booleanValue != null) ^
+              (stringValue != null) ^
+              (referenceValue != null) ^
+              (geoPointValue != null),
+          'Only one of the values can be set for Value',
+        );
 
   factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
 

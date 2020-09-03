@@ -221,17 +221,18 @@ Map<String, dynamic> _$FieldReferenceToJson(FieldReference instance) {
 }
 
 Filter _$FilterFromJson(Map<String, dynamic> json) {
-  return Filter()
-    ..compositeFilter = json['compositeFilter'] == null
+  return Filter(
+    compositeFilter: json['compositeFilter'] == null
         ? null
         : CompositeFilter.fromJson(
-            json['compositeFilter'] as Map<String, dynamic>)
-    ..fieldFilter = json['fieldFilter'] == null
+            json['compositeFilter'] as Map<String, dynamic>),
+    fieldFilter: json['fieldFilter'] == null
         ? null
-        : FieldFilter.fromJson(json['fieldFilter'] as Map<String, dynamic>)
-    ..unaryFilter = json['unaryFilter'] == null
+        : FieldFilter.fromJson(json['fieldFilter'] as Map<String, dynamic>),
+    unaryFilter: json['unaryFilter'] == null
         ? null
-        : UnaryFilter.fromJson(json['unaryFilter'] as Map<String, dynamic>);
+        : UnaryFilter.fromJson(json['unaryFilter'] as Map<String, dynamic>),
+  );
 }
 
 Map<String, dynamic> _$FilterToJson(Filter instance) {
@@ -250,8 +251,13 @@ Map<String, dynamic> _$FilterToJson(Filter instance) {
 }
 
 CompositeFilter _$CompositeFilterFromJson(Map<String, dynamic> json) {
-  return CompositeFilter()
-    ..op = _$enumDecodeNullable(_$CompositeOperatorEnumMap, json['op']);
+  return CompositeFilter(
+    _$enumDecodeNullable(_$CompositeOperatorEnumMap, json['op']),
+    (json['filters'] as List)
+        ?.map((e) =>
+            e == null ? null : Filter.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
 }
 
 Map<String, dynamic> _$CompositeFilterToJson(CompositeFilter instance) {
@@ -264,6 +270,7 @@ Map<String, dynamic> _$CompositeFilterToJson(CompositeFilter instance) {
   }
 
   writeNotNull('op', _$CompositeOperatorEnumMap[instance.op]);
+  writeNotNull('filters', instance.filters?.map((e) => e?.toJson())?.toList());
   return val;
 }
 
@@ -305,14 +312,15 @@ const _$CompositeOperatorEnumMap = {
 };
 
 FieldFilter _$FieldFilterFromJson(Map<String, dynamic> json) {
-  return FieldFilter()
-    ..field = json['field'] == null
+  return FieldFilter(
+    json['field'] == null
         ? null
-        : FieldReference.fromJson(json['field'] as Map<String, dynamic>)
-    ..op = _$enumDecodeNullable(_$FieldOperatorEnumMap, json['op'])
-    ..value = json['value'] == null
+        : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
+    _$enumDecodeNullable(_$FieldOperatorEnumMap, json['op']),
+    json['value'] == null
         ? null
-        : Value.fromJson(json['value'] as Map<String, dynamic>);
+        : Value.fromJson(json['value'] as Map<String, dynamic>),
+  );
 }
 
 Map<String, dynamic> _$FieldFilterToJson(FieldFilter instance) {
@@ -343,11 +351,12 @@ const _$FieldOperatorEnumMap = {
 };
 
 UnaryFilter _$UnaryFilterFromJson(Map<String, dynamic> json) {
-  return UnaryFilter()
-    ..op = _$enumDecodeNullable(_$UnaryOperatorEnumMap, json['op'])
-    ..field = json['field'] == null
+  return UnaryFilter(
+    json['field'] == null
         ? null
-        : FieldReference.fromJson(json['field'] as Map<String, dynamic>);
+        : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
+    _$enumDecodeNullable(_$UnaryOperatorEnumMap, json['op']),
+  );
 }
 
 Map<String, dynamic> _$UnaryFilterToJson(UnaryFilter instance) {

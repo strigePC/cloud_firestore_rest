@@ -17,16 +17,12 @@ class _CreateDocumentRequestCardState extends State<CreateDocumentRequestCard> {
   Document last;
 
   Future<void> onCreateTodo() async {
-    final prefix = 'projects'
-        '/${Firebase.app().options.projectId}'
-        '/databases/(default)/documents';
     setState(() {
       loading = true;
     });
 
     try {
       final result = await RestApi.createDocument(
-        prefix,
         'todos',
         body: Document(fields: {
           'title': Value(stringValue: title.trim()),

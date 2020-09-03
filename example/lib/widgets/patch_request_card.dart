@@ -21,12 +21,8 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
   @override
   void initState() {
     super.initState();
-    final prefix = 'projects'
-        '/${Firebase.app().options.projectId}'
-        '/databases/(default)/documents';
-
     RestApi.get(
-      '$prefix/todos/sRdEBPyod3jQsZsuT5Yb',
+      '/todos/sRdEBPyod3jQsZsuT5Yb',
       mask: DocumentMask(['title', 'body']),
     ).then((document) {
       titleController.text = document.fields['title'].stringValue;
@@ -42,9 +38,6 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
   }
 
   Future<void> onUpdateTodo() async {
-    final prefix = 'projects'
-        '/${Firebase.app().options.projectId}'
-        '/databases/(default)/documents';
     setState(() {
       updating = true;
     });
@@ -54,7 +47,7 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
       body = bodyController.text;
 
       final result = await RestApi.patch(
-        '$prefix/todos/sRdEBPyod3jQsZsuT5Yb',
+        '/todos/sRdEBPyod3jQsZsuT5Yb',
         body: Document(fields: {
           'title': Value(stringValue: title.trim()),
           'body': Value(stringValue: body.trim()),

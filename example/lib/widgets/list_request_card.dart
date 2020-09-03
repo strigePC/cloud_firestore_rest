@@ -7,10 +7,6 @@ import './fields_widget.dart';
 class ListRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final prefix = 'projects'
-        '/${Firebase.app().options.projectId}'
-        '/databases/(default)/documents';
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -21,7 +17,6 @@ class ListRequestCard extends StatelessWidget {
             SizedBox(height: 8),
             FutureBuilder<ListDocuments>(
               future: RestApi.list(
-                prefix,
                 'todos',
                 mask: DocumentMask(['title', 'body']),
               ),
@@ -64,7 +59,7 @@ class ListRequestCard extends StatelessWidget {
               color: Colors.red,
               onPressed: () async {
                 try {
-                  await RestApi.delete(doc.name);
+                  await RestApi.delete(doc.name.split('/').last);
                 } on FirebaseException catch (e) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(

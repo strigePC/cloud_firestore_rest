@@ -23,14 +23,19 @@ class RestApi {
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/**}/{collectionId}
   static Future<Document> createDocument(
-    String parent,
     String collectionId, {
+    String projectId,
+    String databaseId = '(default)',
     String documentId,
     DocumentMask mask,
     Document body,
     Map<String, String> headers,
   }) async {
-    final path = '$parent/$collectionId';
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
+
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$collectionId';
     _assertPathFormat(path);
 
     final url = StringBuffer(_baseUrl)..write('/')..write(path);
@@ -65,13 +70,20 @@ class RestApi {
   /// HTTP request
   /// DELETE https://firestore.googleapis.com/v1/{name=projects/*/databases/*/documents/*/**}
   static Future<void> delete(
-    String name, {
+    String documentPath, {
+    String projectId,
+    String databaseId = '(default)',
     Precondition currentDocument,
     Map<String, String> headers,
   }) async {
-    _assertPathFormat(name);
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(name);
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$documentPath';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(path);
 
     if (currentDocument != null) {
       if (currentDocument.exists != null) {
@@ -98,7 +110,9 @@ class RestApi {
   /// HTTP request
   /// GET https://firestore.googleapis.com/v1/{name=projects/*/databases/*/documents/*/**}
   static Future<Document> get(
-    String name, {
+    String documentPath, {
+    String projectId,
+    String databaseId,
     DocumentMask mask,
     Uint64List transaction,
     DateTime readTime,
@@ -106,9 +120,14 @@ class RestApi {
   }) async {
     assert(transaction == null || readTime == null,
         'You should use either transaction or readTime, not both');
-    _assertPathFormat(name);
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(name);
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$documentPath';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(path);
     final queryParameters = <String>[];
 
     // Handling query parameters
@@ -148,8 +167,9 @@ class RestApi {
   /// HTTP Request
   /// GET https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/*/**}/{collectionId}
   static Future<ListDocuments> list(
-    String parent,
     String collectionId, {
+    String projectId,
+    String databaseId = '(default)',
     int pageSize,
     String pageToken,
     String orderBy,
@@ -161,7 +181,11 @@ class RestApi {
   }) async {
     assert(transaction == null || readTime == null,
         'You should use either transaction or readTime, not both');
-    final path = '$parent/$collectionId';
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
+
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$collectionId';
     _assertPathFormat(path);
 
     final url = StringBuffer(_baseUrl)..write('/')..write(path);
@@ -209,16 +233,23 @@ class RestApi {
   /// HTTP request
   /// PATCH https://firestore.googleapis.com/v1/{document.name=projects/*/databases/*/documents/*/**}
   static Future<Document> patch(
-    String name, {
+    String documentPath, {
+    String projectId,
+    String databaseId = '(default)',
     DocumentMask updateMask,
     DocumentMask mask,
     Precondition currentDocument,
     Document body,
     Map<String, String> headers,
   }) async {
-    _assertPathFormat(name);
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(name);
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$documentPath';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(path);
 
     // Handling query parameters
     final queryParameters = <String>[];

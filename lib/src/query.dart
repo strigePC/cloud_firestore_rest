@@ -3,6 +3,7 @@ part of cloud_firestore_rest;
 class Query {
   /// The [FirebaseFirestore] instance of this query.
   final FirebaseFirestore firestore;
+  final StructuredQuery structuredQuery = StructuredQuery();
 
   Query._(this.firestore);
 
@@ -19,14 +20,6 @@ class Query {
     // return parameters['endAt'] != null || parameters['endBefore'] != null;
     //  TODO: implement _hasStartCursor()
     throw UnimplementedError();
-  }
-
-  /// Returns whether the current operator is an inequality operator.
-  bool _isInequality(String operator) {
-    return (operator == '<' ||
-        operator == '<=' ||
-        operator == '>' ||
-        operator == '>=');
   }
 
   /// Asserts that a [DocumentSnapshot] can be used within the current
@@ -100,7 +93,7 @@ class Query {
   }
 
   /// Asserts that the query [field] is either a String or a [FieldPath].
-  void _assertValidFieldType(dynamic field) {
+  void _assertValidFieldType(String field) {
     // assert(
     // field is String || field is FieldPath || field == FieldPath.documentId,
     // 'Supported [field] types are [String] and [FieldPath].');
@@ -190,12 +183,9 @@ class Query {
 
   /// Creates and returns a new Query that's additionally limited to only return up
   /// to the specified number of documents.
-  Query limit(int limit) {
-    // assert(limit > 0, "limit must be a positive number greater than 0");
-    // return Query._(firestore, _delegate.limit(limit));
-
-    //  TODO: implement limit()
-    throw UnimplementedError();
+  void limit(int limit) {
+    assert(limit > 0, "limit must be a positive number greater than 0");
+    structuredQuery.limit = limit;
   }
 
   /// Creates and returns a new Query that only returns the last matching documents.
@@ -232,7 +222,7 @@ class Query {
   /// using [startAfterDocument], [startAtDocument], [endAfterDocument],
   /// or [endAtDocument] because the order by clause on the document id
   /// is added by these methods implicitly.
-  Query orderBy(dynamic field, {bool descending = false}) {
+  void orderBy(String field, {bool descending = false}) {
     assert(field != null && descending != null);
     _assertValidFieldType(field);
     assert(!_hasStartCursor(),
@@ -240,11 +230,16 @@ class Query {
     assert(!_hasEndCursor(),
         "Invalid query. You must not call endAt(), endAtDocument(), endBefore() or endBeforeDocument() before calling orderBy()");
 
-    // final List<List<dynamic>> orders =
-    //     List<List<dynamic>>.from(parameters['orderBy']);
+    final orders = structuredQuery.orderBy;
 
-    // assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,
-    //     "OrderBy field '$field' already exists in this query");
+    assert(
+      orders.where((order) => field == order.field.fieldPath).isEmpty,
+      "OrderBy field '$field' already exists in this query",
+    );
+    orders.add(Order(
+      FieldReference(field),
+      descending ? Direction.descending : Direction.ascending,
+    ));
 
     // if (field == FieldPath.documentId) {
     //   orders.add([field, descending]);
@@ -254,43 +249,38 @@ class Query {
     //   orders.add([fieldPath, descending]);
     // }
 
-    // final List<List<dynamic>> conditions =
-    //     List<List<dynamic>>.from(parameters['where']);
+    if (structuredQuery.where != null) {
+      final filters = <SingularFieldFilter>[];
 
-    // if (conditions.isNotEmpty) {
-    //   for (dynamic condition in conditions) {
-    //     dynamic field = condition[0];
-    //     String operator = condition[1];
+      if (structuredQuery.where.compositeFilter != null) {
+        for (final filter in structuredQuery.where.compositeFilter.filters) {
+          filters.add(filter.unaryFilter ?? filter.fieldFilter);
+        }
+      }
 
-    // Initial orderBy() parameter has to match every where() fieldPath parameter when
-    // inequality operator is invoked
-    // if (_isInequality(operator)) {
-    //   assert(field == orders[0][0],
-    //       "The initial orderBy() field '$orders[0][0]' has to be the same as the where() field parameter '$field' when an inequality operator is invoked.");
-    // }
+      for (final filter in filters) {
+        if (filter is FieldFilter) {
+          // Initial orderBy() parameter has to match every where() fieldPath parameter when
+          // inequality operator is invoked
+          if (filter.op.isInequality()) {
+            assert(
+              filter.field == orders[0].field,
+              "The initial orderBy() field "
+              "'${orders[0].field}' "
+              "has to be the same as the where() field parameter "
+              "'${filter.field}' when an inequality operator is invoked.",
+            );
+          }
+        }
 
-    // for (dynamic order in orders) {
-    //   dynamic orderField = order[0];
+        // if (field == FieldPath.documentId) {
+        //   assert(orderField == FieldPath.documentId,
+        //   "'[FieldPath.documentId]' cannot be used in conjunction with a different orderBy() parameter.");
+        // }
+      }
+    }
 
-    // Any where() fieldPath parameter cannot match any orderBy() parameter when
-    // '==' operand is invoked
-    // if (operator == '==') {
-    //   assert(field != orderField,
-    //       "The '$orderField' cannot be the same as your where() field parameter '$field'.");
-    // }
-
-    // if (field == FieldPath.documentId) {
-    //   assert(orderField == FieldPath.documentId,
-    //       "'[FieldPath.documentId]' cannot be used in conjunction with a different orderBy() parameter.");
-    // }
-    // }
-    // }
-    // }
-
-    // return Query._(firestore, _delegate.orderBy(orders));
-
-    //  TODO: implement orderBy()
-    throw UnimplementedError();
+    structuredQuery.orderBy = orders;
   }
 
   /// Creates and returns a new [Query] that starts after the provided document
@@ -385,20 +375,20 @@ class Query {
     //   List<dynamic> condition;
     //   value = _CodecUtility.valueEncode(value);
 
-      // if (field == FieldPath.documentId) {
-      //   condition = <dynamic>[field, operator, value];
-      // } else {
-      //   FieldPath fieldPath =
-      //       field is String ? FieldPath.fromString(field) : field as FieldPath;
-      //   condition = <dynamic>[fieldPath, operator, value];
-      // }
+    // if (field == FieldPath.documentId) {
+    //   condition = <dynamic>[field, operator, value];
+    // } else {
+    //   FieldPath fieldPath =
+    //       field is String ? FieldPath.fromString(field) : field as FieldPath;
+    //   condition = <dynamic>[fieldPath, operator, value];
+    // }
 
-      // assert(
-      //     conditions
-      //         .where((List<dynamic> item) => equality.equals(condition, item))
-      //         .isEmpty,
-      //     'Condition $condition already exists in this query.');
-      // conditions.add(condition);
+    // assert(
+    //     conditions
+    //         .where((List<dynamic> item) => equality.equals(condition, item))
+    //         .isEmpty,
+    //     'Condition $condition already exists in this query.');
+    // conditions.add(condition);
     // }
 
     // if (isEqualTo != null) addCondition(field, '==', isEqualTo);
@@ -437,69 +427,68 @@ class Query {
     //   String operator = condition[1];
     //   dynamic value = condition[2];
 
-      // Initial orderBy() parameter has to match every where() fieldPath parameter when
-      // inequality operator is invoked
-      // List<List<dynamic>> orders = List.from(parameters['orderBy']);
-      // if (_isInequality(operator) && orders.isNotEmpty) {
-      //   assert(field == orders[0][0],
-      //       "The initial orderBy() field '$orders[0][0]' has to be the same as the where() field parameter '$field' when an inequality operator is invoked.");
-      // }
+    // Initial orderBy() parameter has to match every where() fieldPath parameter when
+    // inequality operator is invoked
+    // List<List<dynamic>> orders = List.from(parameters['orderBy']);
+    // if (_isInequality(operator) && orders.isNotEmpty) {
+    //   assert(field == orders[0][0],
+    //       "The initial orderBy() field '$orders[0][0]' has to be the same as the where() field parameter '$field' when an inequality operator is invoked.");
+    // }
 
-      // if (value == null) {
-      //   assert(operator == '==',
-      //       'You can only perform equals comparisons on null.');
-      // }
+    // if (value == null) {
+    //   assert(operator == '==',
+    //       'You can only perform equals comparisons on null.');
+    // }
 
-      // if (operator == 'in' || operator == 'array-contains-any') {
-      //   assert(value is List,
-      //       "A non-empty [List] is required for '$operator' filters.");
-      //   assert((value as List).length <= 10,
-      //       "'$operator' filters support a maximum of 10 elements in the value [List].");
-      //   assert((value as List).isNotEmpty,
-      //       "'$operator' filters require a non-empty [List].");
-      //   assert((value as List).where((value) => value == null).isEmpty,
-      //       "'$operator' filters cannot contain 'null' in the [List].");
-      // }
+    // if (operator == 'in' || operator == 'array-contains-any') {
+    //   assert(value is List,
+    //       "A non-empty [List] is required for '$operator' filters.");
+    //   assert((value as List).length <= 10,
+    //       "'$operator' filters support a maximum of 10 elements in the value [List].");
+    //   assert((value as List).isNotEmpty,
+    //       "'$operator' filters require a non-empty [List].");
+    //   assert((value as List).where((value) => value == null).isEmpty,
+    //       "'$operator' filters cannot contain 'null' in the [List].");
+    // }
 
-      // if (operator == 'in') {
-      //   assert(!hasIn, "You cannot use 'in' filters more than once.");
-      //   hasIn = true;
-      // }
+    // if (operator == 'in') {
+    //   assert(!hasIn, "You cannot use 'in' filters more than once.");
+    //   hasIn = true;
+    // }
 
-      // if (operator == 'array-contains') {
-      //   assert(!hasArrayContains,
-      //       "You cannot use 'array-contains' filters more than once.");
-      //   hasArrayContains = true;
-      // }
+    // if (operator == 'array-contains') {
+    //   assert(!hasArrayContains,
+    //       "You cannot use 'array-contains' filters more than once.");
+    //   hasArrayContains = true;
+    // }
 
-      // if (operator == 'array-contains-any') {
-      //   assert(!hasArrayContainsAny,
-      //       "You cannot use 'array-contains-any' filters more than once.");
-      //   hasArrayContainsAny = true;
-      // }
+    // if (operator == 'array-contains-any') {
+    //   assert(!hasArrayContainsAny,
+    //       "You cannot use 'array-contains-any' filters more than once.");
+    //   hasArrayContainsAny = true;
+    // }
 
-      // if (operator == 'array-contains-any' || operator == 'in') {
-      //   assert(!(hasIn && hasArrayContainsAny),
-      //       "You cannot use 'in' filters with 'array-contains-any' filters.");
-      // }
+    // if (operator == 'array-contains-any' || operator == 'in') {
+    //   assert(!(hasIn && hasArrayContainsAny),
+    //       "You cannot use 'in' filters with 'array-contains-any' filters.");
+    // }
 
-      // if (operator == 'array-contains' || operator == 'array-contains-any') {
-      //   assert(!(hasArrayContains && hasArrayContainsAny),
-      //       "You cannot use both 'array-contains-any' or 'array-contains' filters together.");
-      // }
+    // if (operator == 'array-contains' || operator == 'array-contains-any') {
+    //   assert(!(hasArrayContains && hasArrayContainsAny),
+    //       "You cannot use both 'array-contains-any' or 'array-contains' filters together.");
+    // }
 
-      // if (_isInequality(operator)) {
-      //   if (hasInequality == null) {
-      //     hasInequality = field;
-      //   } else {
-      //     assert(hasInequality == field,
-      //         "All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '$hasInequality' and '$field'.");
-      //   }
-      // }
+    // if (_isInequality(operator)) {
+    //   if (hasInequality == null) {
+    //     hasInequality = field;
+    //   } else {
+    //     assert(hasInequality == field,
+    //         "All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '$hasInequality' and '$field'.");
+    //   }
+    // }
     // }
 
     // return Query._(firestore, _delegate.where(conditions));
-
 
     //  TODO: implement where()
     throw UnimplementedError();

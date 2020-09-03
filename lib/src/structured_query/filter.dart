@@ -1,5 +1,9 @@
 part of cloud_firestore_rest;
 
+abstract class SingularFieldFilter {
+  FieldReference field;
+}
+
 @JsonSerializable()
 class Filter {
   CompositeFilter compositeFilter;
@@ -27,7 +31,7 @@ class CompositeFilter {
 }
 
 @JsonSerializable()
-class FieldFilter {
+class FieldFilter extends SingularFieldFilter {
   FieldReference field;
   FieldOperator op;
   Value value;
@@ -41,7 +45,7 @@ class FieldFilter {
 }
 
 @JsonSerializable()
-class UnaryFilter {
+class UnaryFilter extends SingularFieldFilter {
   UnaryOperator op;
   FieldReference field;
 

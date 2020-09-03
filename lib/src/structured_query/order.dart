@@ -5,7 +5,7 @@ class Order {
   FieldReference field;
   Direction direction;
 
-  Order();
+  Order(this.field, this.direction);
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 

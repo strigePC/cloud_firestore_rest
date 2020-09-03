@@ -28,6 +28,17 @@ enum FieldOperator {
   arrayContainsAny,
 }
 
+extension Checkers on FieldOperator {
+  /// Returns whether the current operator is an inequality operator.
+  bool isInequality() {
+    final value = FieldOperator.values[index];
+    return value == FieldOperator.lessThan ||
+        value == FieldOperator.lessThanOrEqual ||
+        value == FieldOperator.greaterThan ||
+        value == FieldOperator.greaterThanOrEqual;
+  }
+}
+
 enum UnaryOperator {
   @JsonValue('OPERATOR_UNSPECIFIED')
   operatorUnspecified,

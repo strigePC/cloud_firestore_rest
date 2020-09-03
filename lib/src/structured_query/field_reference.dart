@@ -10,4 +10,13 @@ class FieldReference {
       _$FieldReferenceFromJson(json);
 
   Map<String, dynamic> toJson() => _$FieldReferenceToJson(this);
+
+  @override
+  bool operator ==(Object other) => hashCode == other.hashCode;
+
+  @override
+  int get hashCode => fieldPath.hashCode;
+
+  @override
+  String toString() => fieldPath;
 }

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import './widgets/create_document_request_card.dart';
+import './widgets/get_documents_card.dart';
 import './widgets/get_request_card.dart';
 import './widgets/list_request_card.dart';
 import './widgets/patch_request_card.dart';
@@ -27,6 +28,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     Firebase.initializeApp();
     return DefaultTabController(
+      initialIndex: 1,
       length: 2,
       child: Scaffold(
         appBar: AppBar(
@@ -53,7 +55,7 @@ class MyHomePage extends StatelessWidget {
             Firebase.apps.isNotEmpty
                 ? ListView(
                     children: <Widget>[
-                      Text('Hello'),
+                      GetDocumentsCard(),
                     ],
                   )
                 : Center(child: CircularProgressIndicator()),

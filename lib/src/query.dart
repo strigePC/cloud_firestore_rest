@@ -9,19 +9,10 @@ class Query {
   Query._(this.firestore, this.path);
 
   /// Returns whether the current query has a "start" cursor query.
-  bool _hasStartCursor() {
-    // return parameters['startAt'] != null || parameters['startAfter'] != null;
-
-    //  TODO: implement _hasStartCursor()
-    throw UnimplementedError();
-  }
+  bool _hasStartCursor() => structuredQuery.startAt != null;
 
   /// Returns whether the current query has a "end" cursor query.
-  bool _hasEndCursor() {
-    // return parameters['endAt'] != null || parameters['endBefore'] != null;
-    //  TODO: implement _hasStartCursor()
-    throw UnimplementedError();
-  }
+  bool _hasEndCursor() => structuredQuery.endAt != null;
 
   /// Asserts that a [DocumentSnapshot] can be used within the current
   /// query.

@@ -26,20 +26,40 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Firebase REST Demo'),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Firebase REST Demo'),
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.http), text: 'REST API'),
+              Tab(icon: Icon(Icons.cloud_circle), text: 'Cloud Firestore')
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            Firebase.apps.isNotEmpty
+                ? ListView(
+                    children: <Widget>[
+                      CreateDocumentRequestCard(),
+                      PatchRequestCard(),
+                      GetRequestCard(),
+                      ListRequestCard(),
+                    ],
+                  )
+                : Center(child: CircularProgressIndicator()),
+            Firebase.apps.isNotEmpty
+                ? ListView(
+                    children: <Widget>[
+                      Text('Hello'),
+                    ],
+                  )
+                : Center(child: CircularProgressIndicator()),
+          ],
+        ),
       ),
-      body: Firebase.apps.isNotEmpty
-          ? ListView(
-              children: <Widget>[
-                CreateDocumentRequestCard(),
-                PatchRequestCard(),
-                GetRequestCard(),
-                ListRequestCard(),
-              ],
-            )
-          : Center(child: CircularProgressIndicator()),
     );
   }
 }

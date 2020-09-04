@@ -351,6 +351,9 @@ class RestApi {
       );
     }
 
-    return (json as List).map((e) => RunQuery.fromJson(e)).toList();
+    return (json as List)
+        .where((e) => e['name'] != null)
+        .map((e) => RunQuery.fromJson(e))
+        .toList();
   }
 }

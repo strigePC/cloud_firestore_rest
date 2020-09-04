@@ -112,7 +112,7 @@ class RestApi {
   static Future<Document> get(
     String documentPath, {
     String projectId,
-    String databaseId,
+    String databaseId = '(default)',
     DocumentMask mask,
     Uint64List transaction,
     DateTime readTime,

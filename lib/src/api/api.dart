@@ -299,7 +299,7 @@ class RestApi {
   /// Runs a query.
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents}:runQuery
-  static Future<RunQuery> runQuery(
+  static Future<List<RunQuery>> runQuery(
     String documentPath, {
     String projectId,
     String databaseId = '(default)',
@@ -310,9 +310,8 @@ class RestApi {
     Map<String, String> headers,
   }) async {
     assert(
-      (transaction != null && newTransaction == null && readTime == null) ||
-          (transaction == null && newTransaction != null && readTime == null) ||
-          (transaction == null && newTransaction == null && readTime != null),
+      ((transaction != null) ^ (newTransaction != null) ^ (readTime != null) ||
+          (transaction == null && newTransaction == null && readTime == null)),
       'You can set only one of transaction, newTransaction and readTime',
     );
     assert(databaseId != null);
@@ -344,14 +343,14 @@ class RestApi {
     );
     final json = jsonDecode(res.body);
 
-    if (json['error'] != null) {
+    if (json is List && json.isNotEmpty && json[0]['error'] != null) {
       throw FirebaseException(
         plugin: 'RestAPI.runQuery',
-        code: json['error']['code'].toString(),
-        message: json['error']['message'],
+        code: json[0]['error']['code'].toString(),
+        message: json[0]['error']['message'],
       );
     }
 
-    return RunQuery.fromJson(json);
+    return (json as List).map((e) => RunQuery.fromJson(e)).toList();
   }
 }

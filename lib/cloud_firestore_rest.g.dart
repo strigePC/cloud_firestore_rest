@@ -548,8 +548,8 @@ Map<String, dynamic> _$MapValueToJson(MapValue instance) {
 
 GeoPoint _$GeoPointFromJson(Map<String, dynamic> json) {
   return GeoPoint(
-    (json['lat'] as num)?.toDouble(),
-    (json['lng'] as num)?.toDouble(),
+    (json['latitude'] as num)?.toDouble(),
+    (json['longitude'] as num)?.toDouble(),
   );
 }
 
@@ -562,7 +562,7 @@ Map<String, dynamic> _$GeoPointToJson(GeoPoint instance) {
     }
   }
 
-  writeNotNull('lat', instance.lat);
-  writeNotNull('lng', instance.lng);
+  writeNotNull('latitude', instance.latitude);
+  writeNotNull('longitude', instance.longitude);
   return val;
 }

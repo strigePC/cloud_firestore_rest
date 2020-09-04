@@ -86,16 +86,6 @@ class Query {
     );
   }
 
-  /// Asserts that the query [field] is either a String or a [FieldPath].
-  void _assertValidFieldType(String field) {
-    // assert(
-    // field is String || field is FieldPath || field == FieldPath.documentId,
-    // 'Supported [field] types are [String] and [FieldPath].');
-
-    //  TODO: implement _assertValidFieldType()
-    throw UnimplementedError();
-  }
-
   /// Creates and returns a new [Query] that ends at the provided document
   /// (inclusive). The end position is relative to the order of the query.
   /// The document must contain all of the fields provided in the orderBy of
@@ -125,12 +115,14 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "end" query modifiers.
-  void endAt(List<dynamic> values) {
+  Query endAt(List<dynamic> values) {
     _assertQueryCursorValues(values);
     structuredQuery.endAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
+
+    return this;
   }
 
   /// Creates and returns a new [Query] that ends before the provided document
@@ -154,12 +146,14 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "end" query modifiers.
-  void endBefore(List<dynamic> values) {
+  Query endBefore(List<dynamic> values) {
     _assertQueryCursorValues(values);
     structuredQuery.endAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
+
+    return this;
   }
 
   /// Fetch the documents for this query.
@@ -190,16 +184,18 @@ class Query {
 
   /// Creates and returns a new Query that's additionally limited to only return up
   /// to the specified number of documents.
-  void limit(int limit) {
+  Query limit(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
     structuredQuery.limit = limit;
+
+    return this;
   }
 
   /// Creates and returns a new Query that only returns the last matching documents.
   ///
   /// You must specify at least one orderBy clause for limitToLast queries,
   /// otherwise an exception will be thrown during execution.
-  void limitToLast(int limit) {
+  Query limitToLast(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
     assert(
       structuredQuery.orderBy != null && structuredQuery.orderBy.isNotEmpty,
@@ -215,6 +211,8 @@ class Query {
             ))
         .toList();
     structuredQuery.limit = limit;
+
+    return this;
   }
 
   /// Notifies of query results at this location.
@@ -236,9 +234,8 @@ class Query {
   /// using [startAfterDocument], [startAtDocument], [endAfterDocument],
   /// or [endAtDocument] because the order by clause on the document id
   /// is added by these methods implicitly.
-  void orderBy(String field, {bool descending = false}) {
+  Query orderBy(String field, {bool descending = false}) {
     assert(field != null && descending != null);
-    _assertValidFieldType(field);
     assert(!_hasStartCursor(),
         "Invalid query. You must not call startAt(), startAtDocument(), startAfter() or startAfterDocument() before calling orderBy()");
     assert(!_hasEndCursor(),
@@ -298,6 +295,8 @@ class Query {
     }
 
     structuredQuery.orderBy = orders;
+
+    return this;
   }
 
   /// Creates and returns a new [Query] that starts after the provided document
@@ -321,12 +320,14 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "start" query modifiers.
-  void startAfter(List<dynamic> values) {
+  Query startAfter(List<dynamic> values) {
     _assertQueryCursorValues(values);
     structuredQuery.startAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
+
+    return this;
   }
 
   /// Creates and returns a new [Query] that starts at the provided document
@@ -350,12 +351,14 @@ class Query {
   /// The [values] must be in order of [orderBy] filters.
   ///
   /// Calling this method will replace any existing cursor "start" query modifiers.
-  void startAt(List<dynamic> values) {
+  Query startAt(List<dynamic> values) {
     _assertQueryCursorValues(values);
     structuredQuery.startAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
+
+    return this;
   }
 
   /// Creates and returns a new [Query] with additional filter on specified
@@ -369,7 +372,7 @@ class Query {
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
-  void where(
+  Query where(
     String field, {
     dynamic isEqualTo,
     dynamic isLessThan,
@@ -381,16 +384,15 @@ class Query {
     List<dynamic> whereIn,
     bool isNull,
   }) {
-    _assertValidFieldType(field);
-
     final filters = <SingularFieldFilter>[];
-    if (structuredQuery.where.compositeFilter != null) {
+    if (structuredQuery.where?.compositeFilter != null) {
       for (final filter in structuredQuery.where.compositeFilter.filters) {
         filters.add(filter.unaryFilter ?? filter.fieldFilter);
       }
-    } else {
-      filters.add(structuredQuery.where.unaryFilter ??
-          structuredQuery.where.fieldFilter);
+    } else if (structuredQuery.where?.unaryFilter != null) {
+      filters.add(structuredQuery.where?.unaryFilter);
+    } else if (structuredQuery.where?.fieldFilter != null) {
+      filters.add(structuredQuery.where?.fieldFilter);
     }
 
     void addUnaryFilter(String field, UnaryOperator operator) {
@@ -408,8 +410,8 @@ class Query {
         Value.fromValue(value),
       );
 
-      assert(filters.where((f) => f != filter).isEmpty,
-          'Condition $filter already exists in this query.');
+      assert(filters.where((f) => f == filter).isEmpty,
+          'Condition ($filter) already exists in this query.');
       filters.add(filter);
     }
 
@@ -469,7 +471,7 @@ class Query {
               "when an inequality operator is invoked.");
         }
         assert(
-          !filter.value.nullValue,
+          filter.value.nullValue == null || !filter.value.nullValue,
           'Use isNull for checking if field is null',
         );
 
@@ -560,5 +562,7 @@ class Query {
           ? Filter(unaryFilter: filters.first)
           : Filter(fieldFilter: filters.first);
     }
+
+    return this;
   }
 }

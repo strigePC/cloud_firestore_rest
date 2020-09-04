@@ -15,7 +15,12 @@ class GetDocumentsCard extends StatelessWidget {
             Text('GET DOCUMENTS', style: Theme.of(context).textTheme.headline5),
             SizedBox(height: 8),
             FutureBuilder<QuerySnapshot>(
-              future: FirebaseFirestore.instance.collection('todos').get(),
+              future: FirebaseFirestore.instance
+                  .collection('todos')
+                  .where('bullets', arrayContains: 'bread')
+                  .where('title', isEqualTo: 'Buy food')
+                  .where('body', isEqualTo: 'world')
+                  .get(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   print(snapshot.error);

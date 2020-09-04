@@ -50,6 +50,44 @@ class FieldFilter extends SingularFieldFilter {
 
   @override
   int get hashCode => op.hashCode * field.hashCode * value.hashCode;
+
+  @override
+  String toString() {
+    final result = StringBuffer(field);
+
+    switch (op) {
+      case FieldOperator.lessThan:
+        result.write(' < ');
+        break;
+      case FieldOperator.lessThanOrEqual:
+        result.write(' <= ');
+        break;
+      case FieldOperator.greaterThan:
+        result.write(' > ');
+        break;
+      case FieldOperator.greaterThanOrEqual:
+        result.write(' >= ');
+        break;
+      case FieldOperator.equal:
+        result.write(' == ');
+        break;
+      case FieldOperator.arrayContains:
+        result.write(' contains ');
+        break;
+      case FieldOperator.inArray:
+        result.write(' in ');
+        break;
+      case FieldOperator.arrayContainsAny:
+        result.write(' contains any of ');
+        break;
+      case FieldOperator.operatorUnspecified:
+        break;
+    }
+
+    result.write(value);
+
+    return result.toString();
+  }
 }
 
 @JsonSerializable()

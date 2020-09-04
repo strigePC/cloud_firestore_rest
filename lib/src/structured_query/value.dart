@@ -76,6 +76,11 @@ class Value {
   factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
 
   Map<String, dynamic> toJson() => _$ValueToJson(this);
+
+  @override
+  String toString() {
+    return decode.toString();
+  }
 }
 
 @JsonSerializable()
@@ -99,6 +104,11 @@ class ArrayValue {
       _$ArrayValueFromJson(json);
 
   Map<String, dynamic> toJson() => _$ArrayValueToJson(this);
+
+  @override
+  String toString() {
+    return decode.toString();
+  }
 }
 
 @JsonSerializable()
@@ -123,4 +133,9 @@ class MapValue {
       _$MapValueFromJson(json);
 
   Map<String, dynamic> toJson() => _$MapValueToJson(this);
+
+  @override
+  String toString() {
+    return decode.toString();
+  }
 }

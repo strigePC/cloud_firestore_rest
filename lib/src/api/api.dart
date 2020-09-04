@@ -300,7 +300,9 @@ class RestApi {
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents}:runQuery
   static Future<RunQuery> runQuery(
-    String parent, {
+    String documentPath, {
+    String projectId,
+    String databaseId = '(default)',
     StructuredQuery structuredQuery,
     Uint64List transaction,
     TransactionOptions newTransaction,
@@ -313,9 +315,14 @@ class RestApi {
           (transaction == null && newTransaction == null && readTime != null),
       'You can set only one of transaction, newTransaction and readTime',
     );
-    _assertPathFormat(parent);
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(parent);
+    final path =
+        'projects/$projectId/databases/$databaseId/documents/$documentPath';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)..write('/')..write(path);
 
     final body = <String, dynamic>{'structuredQuery': structuredQuery};
     if (transaction != null) {

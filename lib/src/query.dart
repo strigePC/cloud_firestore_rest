@@ -80,6 +80,10 @@ class Query {
 
   /// Common handler for all non-document based cursor queries.
   void _assertQueryCursorValues(List<dynamic> fields) {
+    assert(
+      structuredQuery.orderBy != null,
+      'orderBy() method should be called before setting cursors',
+    );
     assert(fields != null);
 
     assert(
@@ -193,7 +197,7 @@ class Query {
   void limitToLast(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
     assert(
-      structuredQuery.orderBy.isNotEmpty,
+      structuredQuery.orderBy != null && structuredQuery.orderBy.isNotEmpty,
       "limitToLast() queries require specifying at least one orderBy() clause",
     );
 
@@ -235,7 +239,7 @@ class Query {
     assert(!_hasEndCursor(),
         "Invalid query. You must not call endAt(), endAtDocument(), endBefore() or endBeforeDocument() before calling orderBy()");
 
-    final orders = structuredQuery.orderBy;
+    final orders = structuredQuery.orderBy ?? [];
 
     assert(
       orders.where((order) => field == order.field.fieldPath).isEmpty,
@@ -449,7 +453,9 @@ class Query {
       if (filter is FieldFilter) {
         // Initial orderBy() parameter has to match every where() fieldPath parameter when
         // inequality operator is invoked
-        if (filter.op.isInequality() && structuredQuery.orderBy.isNotEmpty) {
+        if (filter.op.isInequality() &&
+            structuredQuery.orderBy != null &&
+            structuredQuery.orderBy.isNotEmpty) {
           assert(
               filter.field == structuredQuery.orderBy[0].field,
               "The initial orderBy() field "

@@ -420,6 +420,11 @@ StructuredQuery _$StructuredQueryFromJson(Map<String, dynamic> json) {
     ..select = json['select'] == null
         ? null
         : Projection.fromJson(json['select'] as Map<String, dynamic>)
+    ..from = (json['from'] as List)
+        ?.map((e) => e == null
+            ? null
+            : CollectionSelector.fromJson(e as Map<String, dynamic>))
+        ?.toList()
     ..where = json['where'] == null
         ? null
         : Filter.fromJson(json['where'] as Map<String, dynamic>)
@@ -447,6 +452,7 @@ Map<String, dynamic> _$StructuredQueryToJson(StructuredQuery instance) {
   }
 
   writeNotNull('select', instance.select?.toJson());
+  writeNotNull('from', instance.from?.map((e) => e?.toJson())?.toList());
   writeNotNull('where', instance.where?.toJson());
   writeNotNull('orderBy', instance.orderBy?.map((e) => e?.toJson())?.toList());
   writeNotNull('startAt', instance.startAt?.toJson());

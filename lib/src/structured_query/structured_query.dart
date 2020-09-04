@@ -3,9 +3,9 @@ part of cloud_firestore_rest;
 @JsonSerializable()
 class StructuredQuery {
   Projection select;
-  final List<CollectionSelector> from = [];
+  List<CollectionSelector> from;
   Filter where;
-  List<Order> orderBy = [];
+  List<Order> orderBy;
   Cursor startAt;
   Cursor endAt;
   int offset;
@@ -17,4 +17,9 @@ class StructuredQuery {
       _$StructuredQueryFromJson(json);
 
   Map<String, dynamic> toJson() => _$StructuredQueryToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }

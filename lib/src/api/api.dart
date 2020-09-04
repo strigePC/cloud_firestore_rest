@@ -318,11 +318,15 @@ class RestApi {
     assert(databaseId != null);
     if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final path =
-        'projects/$projectId/databases/$databaseId/documents/$documentPath';
+    final path = 'projects/$projectId'
+        '/databases/$databaseId'
+        '/documents/$documentPath';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
+    final url = StringBuffer(_baseUrl)
+      ..write('/')
+      ..write(path)
+      ..write(':runQuery');
 
     final body = <String, dynamic>{'structuredQuery': structuredQuery};
     if (transaction != null) {

@@ -5,11 +5,11 @@ class RestApi {
     assert(path != null);
     final pathFormat = RegExp(
       r'projects'
-      r'\/[\w-]+'
+      r'\/[^\/]+'
       r'\/databases'
-      r'\/[\w-()]+'
+      r'\/[^\/]+'
       r'\/documents'
-      r'\/[\w-\/]+',
+      r'\/?[^\/]*',
     );
 
     assert(

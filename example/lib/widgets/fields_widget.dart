@@ -1,10 +1,14 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore_rest/cloud_firestore_rest.dart';
 import 'package:flutter/material.dart';
 
 class FieldsWidget extends StatelessWidget {
   final Map<String, Value> fields;
+  final Map<String, dynamic> data;
 
-  const FieldsWidget({Key key, @required this.fields}) : super(key: key);
+  const FieldsWidget({Key key, this.fields, this.data}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,23 +17,42 @@ class FieldsWidget extends StatelessWidget {
       children: [
         RichText(
           text: TextSpan(
-            children: fields.entries
-                .map((field) => TextSpan(
-                      children: [
-                        TextSpan(
-                          text: field.key + ': ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        _buildField(field.value),
-                        TextSpan(text: '\n'),
-                      ],
-                    ))
-                .toList(),
+            children: fields != null ? _buildValues() : _buildData(),
             style: TextStyle(color: Colors.black),
           ),
         ),
       ],
     );
+  }
+
+  List<TextSpan> _buildValues() {
+    return fields.entries
+        .map((field) => TextSpan(
+              children: [
+                TextSpan(
+                  text: field.key + ': ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                _buildField(field.value),
+                TextSpan(text: '\n'),
+              ],
+            ))
+        .toList();
+  }
+
+  List<TextSpan> _buildData() {
+    return data.entries
+        .map((field) => TextSpan(
+              children: [
+                TextSpan(
+                  text: field.key + ': ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                _buildDataField(field.value),
+                TextSpan(text: '\n'),
+              ],
+            ))
+        .toList();
   }
 
   InlineSpan _buildField(Value value) {
@@ -84,6 +107,62 @@ class FieldsWidget extends StatelessWidget {
       ]);
     } else {
       widget = TextSpan(text: value.toJson().toString());
+    }
+    return widget;
+  }
+
+  InlineSpan _buildDataField(dynamic value) {
+    InlineSpan widget;
+    if (value is String) {
+      widget = TextSpan(text: '"$value",');
+    } else if (value is bool) {
+      widget = TextSpan(text: '$value,');
+    } else if (value is double) {
+      widget = TextSpan(text: '${value.toStringAsFixed(2)},');
+    } else if (value is int) {
+      widget = TextSpan(text: '$value,');
+    } else if (value is DateTime) {
+      widget = TextSpan(text: value.toUtc().toIso8601String() + ',');
+    } else if (value is Uint64List) {
+      widget = TextSpan(text: base64Encode(value) + ',');
+    } else if (value is List) {
+      widget = TextSpan(
+        children: [
+          TextSpan(text: '[\n'),
+          ...value
+              .map((value) => _buildDataField(value))
+              .expand((element) => [
+                    TextSpan(text: '\t\t'),
+                    element,
+                    TextSpan(text: '\n'),
+                  ])
+              .toList(),
+          TextSpan(text: '],'),
+        ],
+      );
+    } else if (value is Map<String, dynamic>) {
+      widget = TextSpan(children: [
+        TextSpan(text: '{\n'),
+        ...value.entries
+            .map((field) => TextSpan(
+                  children: [
+                    TextSpan(
+                      text: field.key + ': ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    _buildDataField(field.value),
+                  ],
+                ))
+            .expand((element) => [
+                  TextSpan(text: '\t\t'),
+                  element,
+                  TextSpan(text: '\n'),
+                ])
+            .toList(),
+        TextSpan(text: '},'),
+      ]);
+    } else {
+      widget = TextSpan(text: value.toString());
     }
     return widget;
   }

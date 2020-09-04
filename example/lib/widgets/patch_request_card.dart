@@ -23,7 +23,7 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
   void initState() {
     super.initState();
     RestApi.get(
-      '/todos/sRdEBPyod3jQsZsuT5Yb',
+      'todos/sRdEBPyod3jQsZsuT5Yb',
       mask: DocumentMask(['title', 'body']),
     ).then((document) {
       titleController.text = document.fields['title'].stringValue;
@@ -90,7 +90,7 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
               Center(child: CircularProgressIndicator()),
             if (!updating && updatedDocument != null)
               FieldsWidget(fields: updatedDocument.fields)
-            else
+            else if (updating)
               Center(child: CircularProgressIndicator()),
           ],
         ),

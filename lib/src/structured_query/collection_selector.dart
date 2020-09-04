@@ -5,7 +5,7 @@ class CollectionSelector {
   final String collectionId;
   final bool allDescendants;
 
-  CollectionSelector(this.collectionId, this.allDescendants);
+  CollectionSelector(this.collectionId, {this.allDescendants});
 
   factory CollectionSelector.fromJson(Map<String, dynamic> json) =>
       _$CollectionSelectorFromJson(json);

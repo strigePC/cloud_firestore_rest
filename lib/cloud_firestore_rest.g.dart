@@ -159,7 +159,7 @@ Map<String, dynamic> _$DocumentToJson(Document instance) {
 CollectionSelector _$CollectionSelectorFromJson(Map<String, dynamic> json) {
   return CollectionSelector(
     json['collectionId'] as String,
-    json['allDescendants'] as bool,
+    allDescendants: json['allDescendants'] as bool,
   );
 }
 

@@ -53,11 +53,24 @@ class Value {
     if (value is List) return Value(arrayValue: ArrayValue.fromList(value));
     if (value is Map<String, dynamic>)
       return Value(mapValue: MapValue.fromMap(value));
-    if (value is Uint64List) Value(bytesValue: base64Encode(value));
+    if (value is Uint64List) return Value(bytesValue: base64Encode(value));
 
     throw FormatException('The type is unsupported. '
         'Value should be one of these: String, int, bool, double, DateTime, '
         'GeoPoint, List, Map<String, dynamic>, Uint64List');
+  }
+
+  dynamic get decode {
+    if (nullValue != null) return null;
+    if (stringValue != null) return stringValue;
+    if (integerValue != null) return int.parse(integerValue);
+    if (booleanValue != null) return booleanValue;
+    if (doubleValue != null) return doubleValue;
+    if (timestampValue != null) return DateTime.parse(timestampValue);
+    if (geoPointValue != null) return geoPointValue;
+    if (arrayValue != null) return arrayValue.decode;
+    if (mapValue != null) return mapValue.decode;
+    if (bytesValue != null) return base64Decode(bytesValue);
   }
 
   factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
@@ -80,6 +93,8 @@ class ArrayValue {
     return ArrayValue(values);
   }
 
+  List<dynamic> get decode => values.map((value) => value.decode).toList();
+
   factory ArrayValue.fromJson(Map<String, dynamic> json) =>
       _$ArrayValueFromJson(json);
 
@@ -100,6 +115,9 @@ class MapValue {
 
     return MapValue(fields);
   }
+
+  Map<String, dynamic> get decode =>
+      fields.map((key, value) => MapEntry(key, value.decode));
 
   factory MapValue.fromJson(Map<String, dynamic> json) =>
       _$MapValueFromJson(json);

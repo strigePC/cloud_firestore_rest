@@ -4,8 +4,9 @@ class Query {
   /// The [FirebaseFirestore] instance of this query.
   final FirebaseFirestore firestore;
   final StructuredQuery structuredQuery = StructuredQuery();
+  final List<String> path;
 
-  Query._(this.firestore);
+  Query._(this.firestore, this.path);
 
   /// Returns whether the current query has a "start" cursor query.
   bool _hasStartCursor() {
@@ -174,13 +175,26 @@ class Query {
   ///
   /// To modify how the query is fetched, the [options] parameter can be provided
   /// with a [GetOptions] instance.
-  Future<QuerySnapshot> get(/*[GetOptions options]*/) async {
-    // QuerySnapshotPlatform snapshotDelegate =
-    // await _delegate.get(options ?? const GetOptions());
-    // return QuerySnapshot._(firestore, snapshotDelegate);
+  Future<QuerySnapshot> get({Map<String, String> headers}) async {
+    structuredQuery.from = [CollectionSelector(path.last)];
 
-    //  TODO: implement get()
-    throw UnimplementedError();
+    final res = await RestApi.runQuery(
+      path.take(path.length - 1).join('/'),
+      projectId: firestore.app.options.projectId,
+      structuredQuery: structuredQuery,
+    );
+
+    return QuerySnapshot._(res
+        .map(
+          (e) => QueryDocumentSnapshot._(
+            e.document.name,
+            null,
+            e.document.fields.map(
+              (key, value) => MapEntry(key, value.decode),
+            ),
+          ),
+        )
+        .toList());
   }
 
   /// Creates and returns a new Query that's additionally limited to only return up

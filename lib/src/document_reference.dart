@@ -40,7 +40,7 @@ class DocumentReference {
     // assert(isValidCollectionPath(collectionPath),
     // "a collection path must point to a valid collection.");
 
-    return CollectionReference._(firestore);
+    // return CollectionReference._(firestore);
   }
 
   /// Deletes the current document from the collection.

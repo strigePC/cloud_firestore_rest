@@ -30,7 +30,7 @@ class FirebaseFirestore {
     // assert(isValidCollectionPath(collectionPath),
     // "a collection path must point to a valid collection.");
 
-    return CollectionReference._(this);
+    return CollectionReference._(this, collectionPath.split('/'));
   }
 
   /// Returns a [WriteBatch], used for performing multiple writes as a single

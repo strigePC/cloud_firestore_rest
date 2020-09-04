@@ -1,9 +1,8 @@
 part of cloud_firestore_rest;
 
-class CollectionReference {
-  final FirebaseFirestore firestore;
-
-  CollectionReference._(this.firestore);
+class CollectionReference extends Query {
+  CollectionReference._(FirebaseFirestore firestore, List<String> path)
+      : super._(firestore, path);
 
   /// Returns the ID of the referenced collection.
   String get id {
@@ -26,19 +25,18 @@ class CollectionReference {
 
     // return DocumentReference._(firestore, _documentReferencePlatform);
 
-
     //  TODO: implement parent
     throw UnimplementedError();
   }
 
   /// A string containing the slash-separated path to this  CollectionReference
   /// (relative to the root of the database).
-  String get path {
+  // String get path {
     // return _delegate.path;
 
     //  TODO: implement path
-    throw UnimplementedError();
-  }
+    // throw UnimplementedError();
+  // }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after
   /// populating it with provided [data].

@@ -4,9 +4,9 @@ class Query {
   /// The [FirebaseFirestore] instance of this query.
   final FirebaseFirestore firestore;
   final StructuredQuery structuredQuery = StructuredQuery();
-  final List<String> path;
+  final List<String> components;
 
-  Query._(this.firestore, this.path);
+  Query._(this.firestore, this.components);
 
   /// Returns whether the current query has a "start" cursor query.
   bool _hasStartCursor() => structuredQuery.startAt != null;
@@ -167,10 +167,10 @@ class Query {
   /// To modify how the query is fetched, the [options] parameter can be provided
   /// with a [GetOptions] instance.
   Future<QuerySnapshot> get({Map<String, String> headers}) async {
-    structuredQuery.from = [CollectionSelector(path.last)];
+    structuredQuery.from = [CollectionSelector(components.last)];
 
     final res = await RestApi.runQuery(
-      path.take(path.length - 1).join('/'),
+      components.take(components.length - 1).join('/'),
       projectId: firestore.app.options.projectId,
       structuredQuery: structuredQuery,
     );

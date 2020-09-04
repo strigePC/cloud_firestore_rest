@@ -4,30 +4,23 @@ class DocumentReference {
   /// The Firestore instance associated with this document reference.
   final FirebaseFirestore firestore;
 
-  DocumentReference._(this.firestore);
-
   /// This document's given ID within the collection.
-  String get id {
-    //  TODO: implement id
-    throw UnimplementedError();
-  }
+  final String id;
+  final List<String> components;
+
+  DocumentReference._(this.firestore, this.components) : id = components.last;
 
   /// The parent [CollectionReference] of this document.
   CollectionReference get parent {
-    // return CollectionReference._(firestore, _delegate.parent);
-
-    //  TODO: implement parent
-    throw UnimplementedError();
+    return CollectionReference._(
+      firestore,
+      components.take(components.length - 1),
+    );
   }
 
   /// A string representing the path of the referenced document (relative to the
   /// root of the database).
-  String get path {
-    // return _delegate.path;
-
-    //  TODO: implement path
-    throw UnimplementedError();
-  }
+  String get path => components.join('/');
 
   /// Gets a [CollectionReference] instance that refers to the collection at the
   /// specified path, relative from this [DocumentReference].
@@ -37,18 +30,22 @@ class DocumentReference {
         "a collectionPath path must be a non-empty string");
     assert(!collectionPath.contains("//"),
         "a collection path must not contain '//'");
-    // assert(isValidCollectionPath(collectionPath),
-    // "a collection path must point to a valid collection.");
+    assert(collectionPath.split('/').length % 2 == 1,
+        "a collection path must point to a valid collection.");
 
-    // return CollectionReference._(firestore);
+    return CollectionReference._(
+      firestore,
+      components.followedBy(collectionPath.split('/')),
+    );
   }
 
   /// Deletes the current document from the collection.
-  Future<void> delete() {
-    // return _delegate.delete();
-
-    //  TODO: implement delete()
-    throw UnimplementedError();
+  Future<void> delete({Map<String, String> headers}) async {
+    await RestApi.delete(
+      components.join('/'),
+      projectId: firestore.app.options.projectId,
+      headers: headers,
+    );
   }
 
   /// Reads the document referenced by this [DocumentReference].
@@ -56,12 +53,19 @@ class DocumentReference {
   /// By providing [options], this method can be configured to fetch results only
   /// from the server, only from the local cache or attempt to fetch results
   /// from the server and fall back to the cache (which is the default).
-  Future<DocumentSnapshot> get() async {
-    // return DocumentSnapshot._(
-    //     firestore, await _delegate.get(options ?? const GetOptions()));
+  Future<DocumentSnapshot> get({Map<String, String> headers}) async {
+    final res = await RestApi.get(
+      components.join('/'),
+      headers: headers,
+      projectId: firestore.app.options.projectId,
+    );
 
-    //  TODO: implement get()
-    throw UnimplementedError();
+    return DocumentSnapshot._(
+      id,
+      true,
+      this,
+      res.fields.map((key, value) => MapEntry(key, value.decode)),
+    );
   }
 
   /// Notifies of document updates at this location.
@@ -78,7 +82,10 @@ class DocumentReference {
   ///
   /// If [SetOptions] are provided, the data will be merged into an existing
   /// document instead of overwriting.
-  Future<void> set(Map<String, dynamic> data, /*[SetOptions options]*/) {
+  Future<void> set(
+    Map<String, dynamic> data,
+    /*[SetOptions options]*/
+  ) {
     assert(data != null);
     // return _delegate.set(
     //     _CodecUtility.replaceValueWithDelegatesInMap(data), options);

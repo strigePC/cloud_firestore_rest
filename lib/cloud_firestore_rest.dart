@@ -21,6 +21,7 @@ part 'src/document_reference.dart';
 part 'src/document_snapshot.dart';
 part 'src/firestore.dart';
 part 'src/query.dart';
+part 'src/query_document_snapshot.dart';
 part 'src/query_snapshot.dart';
 part 'src/structured_query/collection_selector.dart';
 part 'src/structured_query/cursor.dart';

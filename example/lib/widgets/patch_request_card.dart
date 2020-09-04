@@ -1,7 +1,8 @@
 import 'package:cloud_firestore_rest/cloud_firestore_rest.dart';
-import 'package:example/widgets/fields_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
+import './fields_widget.dart';
 
 class PatchRequestCard extends StatefulWidget {
   @override

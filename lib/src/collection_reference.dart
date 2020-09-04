@@ -48,9 +48,9 @@ class CollectionReference extends Query {
       components.followedBy([res.name.split('/').last]),
     );
 
-    final DocumentReference newDocument = doc();
-    await newDocument.set(data);
-    return newDocument;
+    // final DocumentReference newDocument = doc();
+    // await newDocument.set(data);
+    // return newDocument;
   }
 
   /// Returns a `DocumentReference` with the provided path.

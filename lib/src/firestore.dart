@@ -27,8 +27,8 @@ class FirebaseFirestore {
         "a collectionPath path must be a non-empty string");
     assert(!collectionPath.contains("//"),
         "a collection path must not contain '//'");
-    // assert(isValidCollectionPath(collectionPath),
-    // "a collection path must point to a valid collection.");
+    assert(collectionPath.split('/').length % 2 == 1,
+        "a collection path must point to a valid collection.");
 
     return CollectionReference._(this, collectionPath.split('/'));
   }
@@ -83,12 +83,10 @@ class FirebaseFirestore {
         documentPath.isNotEmpty, "a document path must be a non-empty string");
     assert(!documentPath.contains("//"),
         "a collection path must not contain '//'");
-    // assert(isValidDocumentPath(documentPath),
-    //     "a document path must point to a valid document.");
+    assert(documentPath.split('/').length % 2 == 0,
+        "a document path must point to a valid document.");
 
-    // return DocumentReference._(this, _delegate.doc(documentPath));
-    //  TODO: implement doc()
-    throw UnimplementedError();
+    return DocumentReference._(this, documentPath.split('/'));
   }
 
   /// Enables the network for this instance. Any pending local-only writes
@@ -159,7 +157,7 @@ class FirebaseFirestore {
   ///  all of its resources or in combination with [clearPersistence()] to ensure
   ///  that all local state is destroyed between test runs.
   // Future<void> terminate() {
-    // return _delegate.terminate();
+  // return _delegate.terminate();
   // }
 
   /// Waits until all currently pending writes for the active user have been
@@ -185,26 +183,4 @@ class FirebaseFirestore {
 
   @override
   String toString() => '$FirebaseFirestore(app: ${app.name})';
-}
-
-/// Extends the [FirebaseFirestore] class to allow for deprecated usage of
-/// using [Firebase] directly.
-@Deprecated("Class Firestore is deprecated, use 'FirebaseFirestore' instead.")
-class Firestore extends FirebaseFirestore {
-  // ignore: public_member_api_docs
-  @Deprecated(
-      "Constructing Firestore is deprecated, use 'FirebaseFirestore.instance' or 'FirebaseFirestore.instanceFor' instead")
-  factory Firestore({FirebaseApp app}) {
-    return FirebaseFirestore.instanceFor(app: app);
-  }
-
-  /// Returns an instance using the default [FirebaseApp].
-  static FirebaseFirestore get instance {
-    return FirebaseFirestore.instance;
-  }
-
-  /// Returns an instance using a specified [FirebaseApp].
-  static FirebaseFirestore instanceFor({FirebaseApp app}) {
-    return FirebaseFirestore.instanceFor(app: app);
-  }
 }

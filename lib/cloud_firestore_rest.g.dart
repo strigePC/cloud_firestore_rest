@@ -328,23 +328,23 @@ Map<String, dynamic> _$ReadWriteToJson(ReadWrite instance) {
 
 Write _$WriteFromJson(Map<String, dynamic> json) {
   return Write(
-    json['updateMask'] == null
+    updateMask: json['updateMask'] == null
         ? null
         : DocumentMask.fromJson(json['updateMask'] as Map<String, dynamic>),
-    (json['updateTransforms'] as List)
+    updateTransforms: (json['updateTransforms'] as List)
         ?.map((e) => e == null
             ? null
             : FieldTransform.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    json['currentDocument'] == null
+    currentDocument: json['currentDocument'] == null
         ? null
         : Precondition.fromJson(
             json['currentDocument'] as Map<String, dynamic>),
-    json['update'] == null
+    update: json['update'] == null
         ? null
         : Document.fromJson(json['update'] as Map<String, dynamic>),
-    json['delete'] as String,
-    json['transform'] == null
+    delete: json['delete'] as String,
+    transform: json['transform'] == null
         ? null
         : DocumentTransform.fromJson(json['transform'] as Map<String, dynamic>),
   );

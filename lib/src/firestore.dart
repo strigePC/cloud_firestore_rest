@@ -52,18 +52,15 @@ class FirebaseFirestore {
   // }
 
   /// Gets a [Query] for the specified collection group.
-  Query collectionGroup(String collectionPath) {
-    assert(collectionPath != null, "a collection path cannot be null");
-    assert(collectionPath.isNotEmpty,
-        "a collection path must be a non-empty string");
-    assert(!collectionPath.contains("/"),
-        "a collection path passed to collectionGroup() cannot contain '/'");
+  // Query collectionGroup(String collectionPath) {
+  //   assert(collectionPath != null, "a collection path cannot be null");
+  //   assert(collectionPath.isNotEmpty,
+  //       "a collection path must be a non-empty string");
+  //   assert(!collectionPath.contains("/"),
+  //       "a collection path passed to collectionGroup() cannot contain '/'");
 
-    // return Query._(this, _delegate.collectionGroup(collectionPath));
-
-    //  TODO: implement collectionGroup()
-    throw UnimplementedError();
-  }
+  //   return Query._(this, _delegate.collectionGroup(collectionPath));
+  // }
 
   /// Instructs [FirebaseFirestore] to disable the network for the instance.
   ///

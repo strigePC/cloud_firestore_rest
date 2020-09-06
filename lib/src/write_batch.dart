@@ -9,19 +9,25 @@ class WriteBatch {
   /// Commits all of the writes in this write batch as a single atomic unit.
   ///
   /// Calling this method prevents any future operations from being added.
-  Future<void> commit() async {
-  //  TODO implement commit
-    throw UnimplementedError();
+  Future<void> commit({Map<String, String> headers}) async {
+    await RestApi.batchWrite(
+      projectId: _firestore.app.options.projectId,
+      headers: headers,
+      writes: _writes,
+    );
   }
 
   /// Deletes the document referred to by [document].
   void delete(DocumentReference document) {
     assert(document != null);
     assert(document.firestore == _firestore,
-    "the document provided is from a different Firestore instance");
-    // return _delegate.delete(document.path);
-    //  TODO implement delete
-    throw UnimplementedError();
+        "the document provided is from a different Firestore instance");
+
+    _writes.add(Write(
+      delete: 'projects/${_firestore.app.options.projectId}'
+          '/databases/(default)'
+          '/documents/${document.id}',
+    ));
   }
 
   /// Writes to the document referred to by [document].
@@ -30,17 +36,35 @@ class WriteBatch {
   ///
   /// If [SetOptions] are provided, the data will be merged into an existing
   /// document instead of overwriting.
-  void set(DocumentReference document, Map<String, dynamic> data,
-      [SetOptions options]) {
+  void set(
+    DocumentReference document,
+    Map<String, dynamic> data, {
+    SetOptions options,
+    Map<String, String> headers,
+  }) {
     assert(document != null);
     assert(data != null);
     assert(document.firestore == _firestore,
-    "the document provided is from a different Firestore instance");
-    // return _delegate.set(document.path,
-    //     _CodecUtility.replaceValueWithDelegatesInMap(data), options);
+        "the document provided is from a different Firestore instance");
 
-    //  TODO implement set
-    throw UnimplementedError();
+    DocumentMask mask;
+    if (options != null) {
+      if (options.merge != null && options.merge) {
+        mask = DocumentMask(data.keys);
+      } else if (options.mergeFields != null) {
+        mask = DocumentMask(options.mergeFields);
+      }
+    }
+
+    _writes.add(Write(
+      update: Document(
+        name: 'projects/${_firestore.app.options.projectId}'
+            '/databases/(default)'
+            '/documents/${document.id}',
+        fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
+      ),
+      updateMask: mask,
+    ));
   }
 
   /// Updates a given [document].
@@ -50,10 +74,17 @@ class WriteBatch {
     assert(document != null);
     assert(data != null);
     assert(document.firestore == _firestore,
-    "the document provided is from a different Firestore instance");
-    // return _delegate.update(
-    //     document.path, _CodecUtility.replaceValueWithDelegatesInMap(data));
-    //  TODO implement update
-    throw UnimplementedError();
+        "the document provided is from a different Firestore instance");
+
+    _writes.add(Write(
+      update: Document(
+        name: 'projects/${_firestore.app.options.projectId}'
+            '/databases/(default)'
+            '/documents/${document.id}',
+        fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
+      ),
+      updateMask: DocumentMask(data.keys),
+      currentDocument: Precondition(exists: true),
+    ));
   }
 }

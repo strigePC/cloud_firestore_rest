@@ -36,14 +36,14 @@ class Write {
   /// Applies a transformation to a document.
   final DocumentTransform transform;
 
-  Write(
+  Write({
     this.updateMask,
     this.updateTransforms,
     this.currentDocument,
     this.update,
     this.delete,
     this.transform,
-  ) : assert(
+  }) : assert(
           (update != null) ^ (delete != null) ^ (transform != null),
           'You can set only one of the parameters (update, delete, or transform)',
         );

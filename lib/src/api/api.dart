@@ -166,7 +166,7 @@ class RestApi {
   /// Lists documents.
   /// HTTP Request
   /// GET https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/*/**}/{collectionId}
-  static Future<ListDocuments> list(
+  static Future<ListDocumentsResponse> list(
     String collectionId, {
     String projectId,
     String databaseId = '(default)',
@@ -226,7 +226,7 @@ class RestApi {
       );
     }
 
-    return ListDocuments.fromJson(json);
+    return ListDocumentsResponse.fromJson(json);
   }
 
   /// Updates or inserts a document.
@@ -299,7 +299,7 @@ class RestApi {
   /// Runs a query.
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents}:runQuery
-  static Future<List<RunQuery>> runQuery(
+  static Future<List<RunQueryResponse>> runQuery(
     String documentPath, {
     String projectId,
     String databaseId = '(default)',
@@ -353,7 +353,7 @@ class RestApi {
 
     return (json as List)
         .where((e) => e['name'] != null)
-        .map((e) => RunQuery.fromJson(e))
+        .map((e) => RunQueryResponse.fromJson(e))
         .toList();
   }
 }

@@ -15,7 +15,7 @@ class ListRequestCard extends StatelessWidget {
           children: [
             Text('LIST', style: Theme.of(context).textTheme.headline5),
             SizedBox(height: 8),
-            FutureBuilder<ListDocuments>(
+            FutureBuilder<ListDocumentsResponse>(
               future: RestApi.list(
                 'todos',
                 mask: DocumentMask(['title', 'body']),

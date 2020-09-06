@@ -6,8 +6,164 @@ part of cloud_firestore_rest;
 // JsonSerializableGenerator
 // **************************************************************************
 
-ListDocuments _$ListDocumentsFromJson(Map<String, dynamic> json) {
-  return ListDocuments(
+BatchWriteResponse _$BatchWriteResponseFromJson(Map<String, dynamic> json) {
+  return BatchWriteResponse(
+    (json['writeResults'] as List)
+        ?.map((e) =>
+            e == null ? null : WriteResult.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    (json['status'] as List)
+        ?.map((e) =>
+            e == null ? null : Status.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$BatchWriteResponseToJson(BatchWriteResponse instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull(
+      'writeResults', instance.writeResults?.map((e) => e?.toJson())?.toList());
+  writeNotNull('status', instance.status?.map((e) => e?.toJson())?.toList());
+  return val;
+}
+
+DocumentMask _$DocumentMaskFromJson(Map<String, dynamic> json) {
+  return DocumentMask(
+    (json['fieldPaths'] as List)?.map((e) => e as String)?.toList(),
+  );
+}
+
+Map<String, dynamic> _$DocumentMaskToJson(DocumentMask instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fieldPaths', instance.fieldPaths);
+  return val;
+}
+
+DocumentTransform _$DocumentTransformFromJson(Map<String, dynamic> json) {
+  return DocumentTransform(
+    json['document'] as String,
+    (json['fieldTransforms'] as List)
+        ?.map((e) => e == null
+            ? null
+            : FieldTransform.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$DocumentTransformToJson(DocumentTransform instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('document', instance.document);
+  writeNotNull('fieldTransforms',
+      instance.fieldTransforms?.map((e) => e?.toJson())?.toList());
+  return val;
+}
+
+FieldTransform _$FieldTransformFromJson(Map<String, dynamic> json) {
+  return FieldTransform(
+    json['fieldPath'] as String,
+    _$enumDecodeNullable(_$ServerValueEnumMap, json['setToServerValue']),
+    json['increment'] == null
+        ? null
+        : Value.fromJson(json['increment'] as Map<String, dynamic>),
+    json['maximum'] == null
+        ? null
+        : Value.fromJson(json['maximum'] as Map<String, dynamic>),
+    json['minimum'] == null
+        ? null
+        : Value.fromJson(json['minimum'] as Map<String, dynamic>),
+    json['appendMissingElements'] == null
+        ? null
+        : ArrayValue.fromJson(
+            json['appendMissingElements'] as Map<String, dynamic>),
+    json['removeAllFromArray'] == null
+        ? null
+        : ArrayValue.fromJson(
+            json['removeAllFromArray'] as Map<String, dynamic>),
+  );
+}
+
+Map<String, dynamic> _$FieldTransformToJson(FieldTransform instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fieldPath', instance.fieldPath);
+  writeNotNull(
+      'setToServerValue', _$ServerValueEnumMap[instance.setToServerValue]);
+  writeNotNull('increment', instance.increment?.toJson());
+  writeNotNull('maximum', instance.maximum?.toJson());
+  writeNotNull('minimum', instance.minimum?.toJson());
+  writeNotNull(
+      'appendMissingElements', instance.appendMissingElements?.toJson());
+  writeNotNull('removeAllFromArray', instance.removeAllFromArray?.toJson());
+  return val;
+}
+
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+}
+
+const _$ServerValueEnumMap = {
+  ServerValue.serverValueUnspecified: 'serverValueUnspecified',
+  ServerValue.requestTime: 'requestTime',
+};
+
+ListDocumentsResponse _$ListDocumentsResponseFromJson(
+    Map<String, dynamic> json) {
+  return ListDocumentsResponse(
     (json['documents'] as List)
         ?.map((e) =>
             e == null ? null : Document.fromJson(e as Map<String, dynamic>))
@@ -16,7 +172,8 @@ ListDocuments _$ListDocumentsFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$ListDocumentsToJson(ListDocuments instance) {
+Map<String, dynamic> _$ListDocumentsResponseToJson(
+    ListDocumentsResponse instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -31,8 +188,31 @@ Map<String, dynamic> _$ListDocumentsToJson(ListDocuments instance) {
   return val;
 }
 
-RunQuery _$RunQueryFromJson(Map<String, dynamic> json) {
-  return RunQuery(
+Precondition _$PreconditionFromJson(Map<String, dynamic> json) {
+  return Precondition(
+    exists: json['exists'] as bool,
+    updateTime: json['updateTime'] == null
+        ? null
+        : DateTime.parse(json['updateTime'] as String),
+  );
+}
+
+Map<String, dynamic> _$PreconditionToJson(Precondition instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('exists', instance.exists);
+  writeNotNull('updateTime', instance.updateTime?.toIso8601String());
+  return val;
+}
+
+RunQueryResponse _$RunQueryResponseFromJson(Map<String, dynamic> json) {
+  return RunQueryResponse(
     json['transaction'] as String,
     json['document'] == null
         ? null
@@ -44,7 +224,7 @@ RunQuery _$RunQueryFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$RunQueryToJson(RunQuery instance) {
+Map<String, dynamic> _$RunQueryResponseToJson(RunQueryResponse instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -57,6 +237,29 @@ Map<String, dynamic> _$RunQueryToJson(RunQuery instance) {
   writeNotNull('document', instance.document?.toJson());
   writeNotNull('readTime', instance.readTime?.toIso8601String());
   writeNotNull('skippedResults', instance.skippedResults);
+  return val;
+}
+
+Status _$StatusFromJson(Map<String, dynamic> json) {
+  return Status(
+    json['code'] as int,
+    json['message'] as String,
+    (json['details'] as List)?.map((e) => e as Map<String, dynamic>)?.toList(),
+  );
+}
+
+Map<String, dynamic> _$StatusToJson(Status instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('code', instance.code);
+  writeNotNull('message', instance.message);
+  writeNotNull('details', instance.details);
   return val;
 }
 
@@ -120,6 +323,76 @@ Map<String, dynamic> _$ReadWriteToJson(ReadWrite instance) {
   }
 
   writeNotNull('retryTransaction', instance.retryTransaction);
+  return val;
+}
+
+Write _$WriteFromJson(Map<String, dynamic> json) {
+  return Write(
+    json['updateMask'] == null
+        ? null
+        : DocumentMask.fromJson(json['updateMask'] as Map<String, dynamic>),
+    (json['updateTransforms'] as List)
+        ?.map((e) => e == null
+            ? null
+            : FieldTransform.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    json['currentDocument'] == null
+        ? null
+        : Precondition.fromJson(
+            json['currentDocument'] as Map<String, dynamic>),
+    json['update'] == null
+        ? null
+        : Document.fromJson(json['update'] as Map<String, dynamic>),
+    json['delete'] as String,
+    json['transform'] == null
+        ? null
+        : DocumentTransform.fromJson(json['transform'] as Map<String, dynamic>),
+  );
+}
+
+Map<String, dynamic> _$WriteToJson(Write instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('updateMask', instance.updateMask?.toJson());
+  writeNotNull('updateTransforms',
+      instance.updateTransforms?.map((e) => e?.toJson())?.toList());
+  writeNotNull('currentDocument', instance.currentDocument?.toJson());
+  writeNotNull('update', instance.update?.toJson());
+  writeNotNull('delete', instance.delete);
+  writeNotNull('transform', instance.transform?.toJson());
+  return val;
+}
+
+WriteResult _$WriteResultFromJson(Map<String, dynamic> json) {
+  return WriteResult(
+    json['updateTime'] == null
+        ? null
+        : DateTime.parse(json['updateTime'] as String),
+    (json['transformResults'] as List)
+        ?.map(
+            (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$WriteResultToJson(WriteResult instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('updateTime', instance.updateTime?.toIso8601String());
+  writeNotNull('transformResults',
+      instance.transformResults?.map((e) => e?.toJson())?.toList());
   return val;
 }
 
@@ -272,38 +545,6 @@ Map<String, dynamic> _$CompositeFilterToJson(CompositeFilter instance) {
   writeNotNull('op', _$CompositeOperatorEnumMap[instance.op]);
   writeNotNull('filters', instance.filters?.map((e) => e?.toJson())?.toList());
   return val;
-}
-
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
-}
-
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$CompositeOperatorEnumMap = {

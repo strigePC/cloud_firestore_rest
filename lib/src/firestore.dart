@@ -38,9 +38,7 @@ class FirebaseFirestore {
   ///
   /// Unlike [Transaction]s, [WriteBatch]es are persisted offline and therefore are
   /// preferable when you don’t need to condition your writes on read data.
-  // WriteBatch batch() {
-  //   return WriteBatch._(this, _delegate.batch());
-  // }
+  WriteBatch batch() => WriteBatch._(this);
 
   /// Clears any persisted data for the current instance.
   // Future<void> clearPersistence() {

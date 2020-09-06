@@ -40,6 +40,7 @@ part 'src/structured_query/order.dart';
 part 'src/structured_query/projection.dart';
 part 'src/structured_query/structured_query.dart';
 part 'src/structured_query/value.dart';
+part 'src/write_batch.dart';
 part 'types/geo_point.dart';
 
 const _baseUrl = 'https://firestore.googleapis.com/v1';

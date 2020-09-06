@@ -19,6 +19,52 @@ class RestApi {
         'but got $path');
   }
 
+  /// Applies a batch of write operations.
+  ///
+  /// The batchWrite method does not apply the write operations
+  /// atomically and can apply them out of order. Method does not allow more
+  /// than one write per document. Each write succeeds or fails independently.
+  /// See the [BatchWriteResponse] for the success status of each write.
+  ///
+  /// If you require an atomically applied set of writes, use [commit]
+  /// instead.
+  static Future<BatchWriteResponse> batchWrite({
+    String projectId,
+    String databaseId = '(default)',
+    List<Write> writes,
+    Map<String, String> labels,
+    Map<String, String> headers,
+  }) async {
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
+
+    final path = 'projects/$projectId/databases/$databaseId/documents/';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)
+      ..write('/')
+      ..write(path)
+      ..write(':batchWrite');
+    final body = <String, dynamic>{'writes': writes, 'labels': labels};
+
+    final res = await http.post(
+      url.toString(),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    final json = jsonDecode(res.body);
+
+    if (json['error'] != null) {
+      throw FirebaseException(
+        plugin: 'RestAPI.createDocument',
+        code: json['error']['code'].toString(),
+        message: json['error']['message'],
+      );
+    }
+
+    return BatchWriteResponse.fromJson(json);
+  }
+
   /// Creates a new document.
   /// HTTP request
   /// POST https://firestore.googleapis.com/v1/{parent=projects/*/databases/*/documents/**}/{collectionId}

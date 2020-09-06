@@ -10,6 +10,7 @@ import 'package:quiver/core.dart';
 
 part 'cloud_firestore_rest.g.dart';
 part 'src/api/api.dart';
+part 'src/api/batch_write_response.dart';
 part 'src/api/document_mask.dart';
 part 'src/api/document_transform.dart';
 part 'src/api/field_transform.dart';
@@ -18,6 +19,8 @@ part 'src/api/precondition.dart';
 part 'src/api/run_query_response.dart';
 part 'src/api/status.dart';
 part 'src/api/transaction_options.dart';
+part 'src/api/write.dart';
+part 'src/api/write_result.dart';
 part 'src/collection_reference.dart';
 part 'src/document.dart';
 part 'src/document_reference.dart';

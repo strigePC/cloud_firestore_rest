@@ -29,6 +29,7 @@ part 'src/firestore.dart';
 part 'src/query.dart';
 part 'src/query_document_snapshot.dart';
 part 'src/query_snapshot.dart';
+part 'src/set_options.dart';
 part 'src/structured_query/collection_selector.dart';
 part 'src/structured_query/cursor.dart';
 part 'src/structured_query/direction.dart';

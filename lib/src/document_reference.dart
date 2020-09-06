@@ -83,27 +83,52 @@ class DocumentReference {
   /// If [SetOptions] are provided, the data will be merged into an existing
   /// document instead of overwriting.
   Future<void> set(
-    Map<String, dynamic> data,
-    /*[SetOptions options]*/
-  ) {
+    Map<String, dynamic> data, {
+    SetOptions options,
+    Map<String, String> headers,
+  }) async {
     assert(data != null);
-    // return _delegate.set(
-    //     _CodecUtility.replaceValueWithDelegatesInMap(data), options);
 
-    //  TODO: implement set()
-    throw UnimplementedError();
+    DocumentMask mask;
+    if (options != null) {
+      if (options.merge != null && options.merge) {
+        mask = DocumentMask(data.keys);
+      } else if (options.mergeFields != null) {
+        mask = DocumentMask(options.mergeFields);
+      }
+    }
+
+    await RestApi.patch(
+      components.join(),
+      headers: headers,
+      projectId: firestore.app.options.projectId,
+      body: Document(
+        fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
+      ),
+      updateMask: mask,
+    );
   }
 
   /// Updates data on the document. Data will be merged with any existing
   /// document data.
   ///
   /// If no document exists yet, the update will fail.
-  Future<void> update(Map<String, dynamic> data) {
+  Future<void> update(
+    Map<String, dynamic> data, {
+    Map<String, String> headers,
+  }) async {
     assert(data != null);
-    // return _delegate.update(_CodecUtility.replaceValueWithDelegatesInMap(data));
 
-    //  TODO: implement update()
-    throw UnimplementedError();
+    await RestApi.patch(
+      components.join(),
+      headers: headers,
+      projectId: firestore.app.options.projectId,
+      body: Document(
+        fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
+      ),
+      updateMask: DocumentMask(data.keys),
+      currentDocument: Precondition(exists: true),
+    );
   }
 
   @override

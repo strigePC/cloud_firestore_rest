@@ -156,6 +156,14 @@ class Query {
     return this;
   }
 
+  /// Select the fields to be returned by this query
+  Query fields(List<String> fields) {
+    structuredQuery.select = Projection(
+      fields.map((field) => FieldReference(field)).toList(),
+    );
+    return this;
+  }
+
   /// Fetch the documents for this query.
   ///
   /// To modify how the query is fetched, the [options] parameter can be provided

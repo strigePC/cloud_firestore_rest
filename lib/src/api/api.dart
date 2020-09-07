@@ -38,7 +38,7 @@ class RestApi {
     assert(databaseId != null);
     if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final path = 'projects/$projectId/databases/$databaseId/documents/';
+    final path = 'projects/$projectId/databases/$databaseId/documents';
     _assertPathFormat(path);
 
     final url = StringBuffer(_baseUrl)
@@ -363,10 +363,13 @@ class RestApi {
     assert(databaseId != null);
     if (projectId == null) projectId = Firebase.app().options.projectId;
 
-    final path = 'projects/$projectId'
+    final path = StringBuffer('projects/$projectId'
         '/databases/$databaseId'
-        '/documents/$documentPath';
-    _assertPathFormat(path);
+        '/documents');
+    if (documentPath != null) {
+      path.write('/$documentPath');
+    }
+    _assertPathFormat(path.toString());
 
     final url = StringBuffer(_baseUrl)
       ..write('/')

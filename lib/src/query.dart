@@ -27,33 +27,37 @@ class Query {
         "a document snapshot must exist to be used within a query");
 
     // List<List<dynamic>> orders = List.from(parameters['orderBy']);
-    // List<dynamic> values = [];
-    //
-    // for (List<dynamic> order in orders) {
-    //   dynamic field = order[0];
-    //
-    //   // All order by fields must exist within the snapshot
-    //   if (field != FieldPath.documentId) {
-    //     try {
-    //       values.add(documentSnapshot.get(field));
-    //     } on StateError {
-    //       throw ("You are trying to start or end a query using a document for which the field '$field' (used as the orderBy) does not exist.");
-    //     }
-    //   }
-    // }
-    //
-    // // Any time you construct a query and don't include 'name' in the orderBys,
-    // // Firestore will implicitly assume an additional .orderBy('__name__', DIRECTION)
-    // // where DIRECTION will match the last orderBy direction of your query (or 'asc' if you have no orderBys).
-    // if (orders.isNotEmpty) {
-    //   List<dynamic> lastOrder = orders.last;
-    //
-    //   if (lastOrder[0] != FieldPath.documentId) {
-    //     orders.add([FieldPath.documentId, lastOrder[1]]);
-    //   }
-    // } else {
-    //   orders.add([FieldPath.documentId, false]);
-    // }
+    final orders = List.from(structuredQuery.orderBy ?? []);
+    List<dynamic> values = [];
+
+    for (final Order order in orders) {
+      if (order.field.fieldPath != '__name__') {
+        try {
+          values.add(documentSnapshot.reference);
+        } on StateError {
+          throw ("You are trying to start or end a query using a document for which the field '${order.field}' (used as the orderBy) does not exist.");
+        }
+      }
+    }
+
+    // Any time you construct a query and don't include 'name' in the orderBys,
+    // Firestore will implicitly assume an additional .orderBy('__name__', DIRECTION)
+    // where DIRECTION will match the last orderBy direction of your query (or 'asc' if you have no orderBys).
+    if (orders.isNotEmpty) {
+      final lastOrder = orders.last;
+
+      if (lastOrder.field.fieldPath != '__name__') {
+        orders.add(Order(
+          FieldReference('__name__'),
+          direction: lastOrder.direction,
+        ));
+      }
+    } else {
+      orders.add(Order(
+        FieldReference('__name__'),
+        direction: Direction.ascending,
+      ));
+    }
     //
     // if (_delegate.isCollectionGroupQuery) {
     //   values.add(documentSnapshot.reference.path);
@@ -61,13 +65,10 @@ class Query {
     //   values.add(documentSnapshot.id);
     // }
     //
-    // return <String, dynamic>{
-    //   'orders': orders,
-    //   'values': values,
-    // };
-
-    //  TODO: implement _assertQueryCursorSnapshot()
-    throw UnimplementedError();
+    return <String, dynamic>{
+      'orders': orders,
+      'values': values,
+    };
   }
 
   /// Common handler for all non-document based cursor queries.
@@ -102,11 +103,13 @@ class Query {
   ///  * [endBeforeDocument] for a query that ends before a document.
   Query endAtDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
-    // return Query._(firestore,
-    //     _delegate.endAtDocument(results['orders'], results['values']));
 
-    //  TODO: implement endAtDocument()
-    throw UnimplementedError();
+    structuredQuery.endAt = Cursor(
+      results.values.map((value) => Value.fromValue(value)),
+      false,
+    );
+    structuredQuery.orderBy = results['orders'];
+    return this;
   }
 
   /// Takes a list of [values], creates and returns a new [Query] that ends at the
@@ -132,12 +135,14 @@ class Query {
   ///
   /// Calling this method will replace any existing cursor "end" query modifiers.
   Query endBeforeDocument(DocumentSnapshot documentSnapshot) {
-    // Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
-    // return Query._(firestore,
-    //     _delegate.endBeforeDocument(results['orders'], results['values']));
+    Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    //  TODO: implement endBeforeDocument()
-    throw UnimplementedError();
+    structuredQuery.endAt = Cursor(
+      results.values.map((value) => Value.fromValue(value)),
+      true,
+    );
+    structuredQuery.orderBy = results['orders'];
+    return this;
   }
 
   /// Takes a list of [values], creates and returns a new [Query] that ends before
@@ -213,7 +218,7 @@ class Query {
     structuredQuery.orderBy = structuredQuery.orderBy
         .map((order) => Order(
               order.field,
-              order.direction == Direction.ascending
+              direction: order.direction == Direction.ascending
                   ? Direction.descending
                   : Direction.ascending,
             ))
@@ -257,16 +262,8 @@ class Query {
     );
     orders.add(Order(
       FieldReference(field),
-      descending ? Direction.descending : Direction.ascending,
+      direction: descending ? Direction.descending : Direction.ascending,
     ));
-
-    // if (field == FieldPath.documentId) {
-    //   orders.add([field, descending]);
-    // } else {
-    //   FieldPath fieldPath =
-    //       field is String ? FieldPath.fromString(field) : field;
-    //   orders.add([fieldPath, descending]);
-    // }
 
     if (structuredQuery.where != null) {
       final filters = <SingularFieldFilter>[];
@@ -293,12 +290,29 @@ class Query {
               "'${filter.field}' when an inequality operator is invoked.",
             );
           }
+
+          for (final order in orders) {
+            // Any where() fieldPath parameter cannot match any orderBy() parameter when
+            // '==' operand is invoked
+            if (filter.op == FieldOperator.equal) {
+              assert(
+                filter.field != order.field,
+                "The '${order.field}' cannot be the same as your where() field "
+                "parameter '$field'.",
+              );
+            }
+          }
         }
 
-        // if (field == FieldPath.documentId) {
-        //   assert(orderField == FieldPath.documentId,
-        //   "'[FieldPath.documentId]' cannot be used in conjunction with a different orderBy() parameter.");
-        // }
+        for (final order in orders) {
+          if (filter.field.fieldPath == '__name__') {
+            assert(
+              order.field.fieldPath == '__name__',
+              "'__name__' cannot be used in conjunction with a different "
+              "orderBy() parameter.",
+            );
+          }
+        }
       }
     }
 
@@ -314,12 +328,14 @@ class Query {
   ///
   /// Calling this method will replace any existing cursor "start" query modifiers.
   Query startAfterDocument(DocumentSnapshot documentSnapshot) {
-    // Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
-    // return Query._(firestore,
-    //     _delegate.startAfterDocument(results['orders'], results['values']));
+    Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    //  TODO: implement startAfterDocument()
-    throw UnimplementedError();
+    structuredQuery.startAt = Cursor(
+      results.values.map((value) => Value.fromValue(value)),
+      false,
+    );
+    structuredQuery.orderBy = results['orders'];
+    return this;
   }
 
   /// Takes a list of [values], creates and returns a new [Query] that starts
@@ -346,11 +362,13 @@ class Query {
   /// Calling this method will replace any existing cursor "start" query modifiers.
   Query startAtDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
-    // return Query._(firestore,
-    //     _delegate.startAtDocument(results['orders'], results['values']));
 
-    //  TODO: implement startAtDocument()
-    throw UnimplementedError();
+    structuredQuery.startAt = Cursor(
+      results.values.map((value) => Value.fromValue(value)),
+      true,
+    );
+    structuredQuery.orderBy = results['orders'];
+    return this;
   }
 
   /// Takes a list of [values], creates and returns a new [Query] that starts at

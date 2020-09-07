@@ -46,7 +46,7 @@ class DocumentSnapshot {
       }
 
       return subsetData;
-    } on NoSuchMethodError catch (_) {
+    } on NoSuchMethodError {
       throw StateError('No data could be found at the specified path ($field)');
     }
   }

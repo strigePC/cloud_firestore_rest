@@ -54,10 +54,25 @@ class Value {
     if (value is Map<String, dynamic>)
       return Value(mapValue: MapValue.fromMap(value));
     if (value is Uint64List) return Value(bytesValue: base64Encode(value));
+    if (value is DocumentReference) {
+      return Value(
+        referenceValue: 'projects/${value.firestore.app.options.projectId}'
+            '/databases/(default)'
+            '/documents/${value.path}',
+      );
+    }
+    if (value is CollectionReference) {
+      return Value(
+        referenceValue: 'projects/${value.firestore.app.options.projectId}'
+            '/databases/(default)'
+            '/documents/${value.path}',
+      );
+    }
 
     throw FormatException('The type is unsupported. '
         'Value should be one of these: String, int, bool, double, DateTime, '
-        'GeoPoint, List, Map<String, dynamic>, Uint64List');
+        'GeoPoint, List, Map<String, dynamic>, Uint64List, DocumentReference, '
+        'CollectionReference');
   }
 
   dynamic get decode {

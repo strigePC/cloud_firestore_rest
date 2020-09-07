@@ -625,7 +625,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
     json['field'] == null
         ? null
         : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
-    _$enumDecodeNullable(_$DirectionEnumMap, json['direction']),
+    direction: _$enumDecodeNullable(_$DirectionEnumMap, json['direction']),
   );
 }
 
@@ -650,11 +650,27 @@ const _$DirectionEnumMap = {
 };
 
 Projection _$ProjectionFromJson(Map<String, dynamic> json) {
-  return Projection();
+  return Projection(
+    (json['fields'] as List)
+        ?.map((e) => e == null
+            ? null
+            : FieldReference.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
 }
 
-Map<String, dynamic> _$ProjectionToJson(Projection instance) =>
-    <String, dynamic>{};
+Map<String, dynamic> _$ProjectionToJson(Projection instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('fields', instance.fields?.map((e) => e?.toJson())?.toList());
+  return val;
+}
 
 StructuredQuery _$StructuredQueryFromJson(Map<String, dynamic> json) {
   return StructuredQuery()

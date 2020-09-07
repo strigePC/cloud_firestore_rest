@@ -1,11 +1,18 @@
 part of cloud_firestore_rest;
 
+/// An order on a field.
 @JsonSerializable()
 class Order {
-  FieldReference field;
-  Direction direction;
+  /// The field to order by.
+  final FieldReference field;
 
-  Order(this.field, this.direction);
+  /// The direction to order by. Defaults to [Direction.ascending].
+  final Direction direction;
+
+  Order(this.field, {this.direction = Direction.ascending})
+      : assert(field != null),
+        assert(direction != null),
+        assert(direction != Direction.directionUnspecified);
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 

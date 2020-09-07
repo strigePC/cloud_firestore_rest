@@ -183,20 +183,22 @@ class Query {
     structuredQuery.from = [CollectionSelector(components.last)];
 
     if (_geoSearchArea == null) {
-      final res = await RestApi.runQuery(
+      final results = await RestApi.runQuery(
         components.take(components.length - 1).join('/'),
         projectId: firestore.app.options.projectId,
         structuredQuery: structuredQuery,
       );
 
-      return QuerySnapshot._(res
+      return QuerySnapshot._(results
           .map(
-            (e) => QueryDocumentSnapshot._(
-              e.document.name,
-              null,
-              e.document.fields.map(
-                (key, value) => MapEntry(key, value.decode),
+            (result) => QueryDocumentSnapshot._(
+              result.document.name.split('/').last,
+              DocumentReference._(
+                firestore,
+                result.document.name.split('/').skip(5),
               ),
+              result.document.fields
+                  .map((key, value) => MapEntry(key, value.decode)),
             ),
           )
           .toList());

@@ -2,21 +2,21 @@ part of cloud_firestore_rest;
 
 class Query {
   /// The [FirebaseFirestore] instance of this query.
-  final FirebaseFirestore firestore;
-  final StructuredQuery structuredQuery = StructuredQuery();
-  final List<String> components;
+  final FirebaseFirestore _firestore;
+  final StructuredQuery _structuredQuery = StructuredQuery();
+  final List<String> _components;
 
   List<String> _geoSearchArea;
   String _geoFieldName;
   GeoPoint _geoCenter;
 
-  Query._(this.firestore, this.components);
+  Query._(this._firestore, this._components);
 
   /// Returns whether the current query has a "start" cursor query.
-  bool _hasStartCursor() => structuredQuery.startAt != null;
+  bool _hasStartCursor() => _structuredQuery.startAt != null;
 
   /// Returns whether the current query has a "end" cursor query.
-  bool _hasEndCursor() => structuredQuery.endAt != null;
+  bool _hasEndCursor() => _structuredQuery.endAt != null;
 
   /// Asserts that a [DocumentSnapshot] can be used within the current
   /// query.
@@ -31,7 +31,7 @@ class Query {
         "a document snapshot must exist to be used within a query");
 
     // List<List<dynamic>> orders = List.from(parameters['orderBy']);
-    final orders = List.from(structuredQuery.orderBy ?? []);
+    final orders = List.from(_structuredQuery.orderBy ?? []);
     List<dynamic> values = [];
 
     for (final Order order in orders) {
@@ -80,13 +80,13 @@ class Query {
     assert(_geoSearchArea == null,
         'cursors (startAt, endAt, etc.) cannot be used on geo queries');
     assert(
-      structuredQuery.orderBy != null,
+      _structuredQuery.orderBy != null,
       'orderBy() method should be called before setting cursors',
     );
     assert(fields != null);
 
     assert(
-      fields.length <= structuredQuery.orderBy.length,
+      fields.length <= _structuredQuery.orderBy.length,
       "Too many arguments provided. "
       "The number of arguments must be less than or equal to the number of "
       "orderBy() clauses.",
@@ -110,11 +110,11 @@ class Query {
   Query endAtDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    structuredQuery.endAt = Cursor(
+    _structuredQuery.endAt = Cursor(
       results.values.map((value) => Value.fromValue(value)),
       false,
     );
-    structuredQuery.orderBy = results['orders'];
+    _structuredQuery.orderBy = results['orders'];
     return this;
   }
 
@@ -126,7 +126,7 @@ class Query {
   /// Calling this method will replace any existing cursor "end" query modifiers.
   Query endAt(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    structuredQuery.endAt = Cursor(
+    _structuredQuery.endAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
@@ -143,11 +143,11 @@ class Query {
   Query endBeforeDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    structuredQuery.endAt = Cursor(
+    _structuredQuery.endAt = Cursor(
       results.values.map((value) => Value.fromValue(value)),
       true,
     );
-    structuredQuery.orderBy = results['orders'];
+    _structuredQuery.orderBy = results['orders'];
     return this;
   }
 
@@ -159,7 +159,7 @@ class Query {
   /// Calling this method will replace any existing cursor "end" query modifiers.
   Query endBefore(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    structuredQuery.endAt = Cursor(
+    _structuredQuery.endAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
@@ -169,7 +169,7 @@ class Query {
 
   /// Select the fields to be returned by this query
   Query fields(List<String> fields) {
-    structuredQuery.select = Projection(
+    _structuredQuery.select = Projection(
       fields.map((field) => FieldReference(field)).toList(),
     );
     return this;
@@ -180,13 +180,13 @@ class Query {
   /// To modify how the query is fetched, the [options] parameter can be provided
   /// with a [GetOptions] instance.
   Future<QuerySnapshot> get({Map<String, String> headers}) async {
-    structuredQuery.from = [CollectionSelector(components.last)];
+    _structuredQuery.from = [CollectionSelector(_components.last)];
 
     if (_geoSearchArea == null) {
       final results = await RestApi.runQuery(
-        components.take(components.length - 1).join('/'),
-        projectId: firestore.app.options.projectId,
-        structuredQuery: structuredQuery,
+        _components.take(_components.length - 1).join('/'),
+        projectId: _firestore.app.options.projectId,
+        structuredQuery: _structuredQuery,
       );
 
       return QuerySnapshot._(results
@@ -194,7 +194,7 @@ class Query {
             (result) => QueryDocumentSnapshot._(
               result.document.name.split('/').last,
               DocumentReference._(
-                firestore,
+                _firestore,
                 result.document.name.split('/').skip(5),
               ),
               result.document.fields
@@ -204,14 +204,14 @@ class Query {
           .toList());
     } else {
       final res = await Future.wait(_geoSearchArea.map((hash) {
-        final query = Query._(firestore, components);
-        query.structuredQuery.select = structuredQuery.select;
-        query.structuredQuery.limit = structuredQuery.limit;
-        query.structuredQuery.from = structuredQuery.from;
-        query.structuredQuery.where = structuredQuery.where;
-        query.structuredQuery.orderBy = structuredQuery.orderBy;
-        query.structuredQuery.startAt = Cursor([Value.fromValue(hash)], false);
-        query.structuredQuery.endAt =
+        final query = Query._(_firestore, _components);
+        query._structuredQuery.select = _structuredQuery.select;
+        query._structuredQuery.limit = _structuredQuery.limit;
+        query._structuredQuery.from = _structuredQuery.from;
+        query._structuredQuery.where = _structuredQuery.where;
+        query._structuredQuery.orderBy = _structuredQuery.orderBy;
+        query._structuredQuery.startAt = Cursor([Value.fromValue(hash)], false);
+        query._structuredQuery.endAt =
             Cursor([Value.fromValue('$hash~')], false);
 
         return query.get(headers: headers);
@@ -236,7 +236,7 @@ class Query {
   /// to the specified number of documents.
   Query limit(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
-    structuredQuery.limit = limit;
+    _structuredQuery.limit = limit;
 
     return this;
   }
@@ -248,11 +248,11 @@ class Query {
   Query limitToLast(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
     assert(
-      structuredQuery.orderBy != null && structuredQuery.orderBy.isNotEmpty,
+      _structuredQuery.orderBy != null && _structuredQuery.orderBy.isNotEmpty,
       "limitToLast() queries require specifying at least one orderBy() clause",
     );
 
-    structuredQuery.orderBy = structuredQuery.orderBy
+    _structuredQuery.orderBy = _structuredQuery.orderBy
         .map((order) => Order(
               order.field,
               direction: order.direction == Direction.ascending
@@ -260,7 +260,7 @@ class Query {
                   : Direction.ascending,
             ))
         .toList();
-    structuredQuery.limit = limit;
+    _structuredQuery.limit = limit;
 
     return this;
   }
@@ -292,7 +292,7 @@ class Query {
         "Invalid query. You must not call endAt(), endAtDocument(), endBefore() or endBeforeDocument() before calling orderBy()");
     assert(_geoSearchArea == null, 'orderBy() cannot be used on geo queries');
 
-    final orders = structuredQuery.orderBy ?? [];
+    final orders = _structuredQuery.orderBy ?? [];
 
     assert(
       orders.where((order) => field == order.field.fieldPath).isEmpty,
@@ -303,16 +303,16 @@ class Query {
       direction: descending ? Direction.descending : Direction.ascending,
     ));
 
-    if (structuredQuery.where != null) {
+    if (_structuredQuery.where != null) {
       final filters = <SingularFieldFilter>[];
 
-      if (structuredQuery.where.compositeFilter != null) {
-        for (final filter in structuredQuery.where.compositeFilter.filters) {
+      if (_structuredQuery.where.compositeFilter != null) {
+        for (final filter in _structuredQuery.where.compositeFilter.filters) {
           filters.add(filter.unaryFilter ?? filter.fieldFilter);
         }
       } else {
-        filters.add(structuredQuery.where.unaryFilter ??
-            structuredQuery.where.fieldFilter);
+        filters.add(_structuredQuery.where.unaryFilter ??
+            _structuredQuery.where.fieldFilter);
       }
 
       for (final filter in filters) {
@@ -354,7 +354,7 @@ class Query {
       }
     }
 
-    structuredQuery.orderBy = orders;
+    _structuredQuery.orderBy = orders;
 
     return this;
   }
@@ -368,11 +368,11 @@ class Query {
   Query startAfterDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    structuredQuery.startAt = Cursor(
+    _structuredQuery.startAt = Cursor(
       results.values.map((value) => Value.fromValue(value)),
       false,
     );
-    structuredQuery.orderBy = results['orders'];
+    _structuredQuery.orderBy = results['orders'];
     return this;
   }
 
@@ -384,7 +384,7 @@ class Query {
   /// Calling this method will replace any existing cursor "start" query modifiers.
   Query startAfter(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    structuredQuery.startAt = Cursor(
+    _structuredQuery.startAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
@@ -401,11 +401,11 @@ class Query {
   Query startAtDocument(DocumentSnapshot documentSnapshot) {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
-    structuredQuery.startAt = Cursor(
+    _structuredQuery.startAt = Cursor(
       results.values.map((value) => Value.fromValue(value)),
       true,
     );
-    structuredQuery.orderBy = results['orders'];
+    _structuredQuery.orderBy = results['orders'];
     return this;
   }
 
@@ -417,7 +417,7 @@ class Query {
   /// Calling this method will replace any existing cursor "start" query modifiers.
   Query startAt(List<dynamic> values) {
     _assertQueryCursorValues(values);
-    structuredQuery.startAt = Cursor(
+    _structuredQuery.startAt = Cursor(
       values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
@@ -456,14 +456,14 @@ class Query {
       'centeredAt and isWithin parameters must be used together',
     );
     final filters = <SingularFieldFilter>[];
-    if (structuredQuery.where?.compositeFilter != null) {
-      for (final filter in structuredQuery.where.compositeFilter.filters) {
+    if (_structuredQuery.where?.compositeFilter != null) {
+      for (final filter in _structuredQuery.where.compositeFilter.filters) {
         filters.add(filter.unaryFilter ?? filter.fieldFilter);
       }
-    } else if (structuredQuery.where?.unaryFilter != null) {
-      filters.add(structuredQuery.where?.unaryFilter);
-    } else if (structuredQuery.where?.fieldFilter != null) {
-      filters.add(structuredQuery.where?.fieldFilter);
+    } else if (_structuredQuery.where?.unaryFilter != null) {
+      filters.add(_structuredQuery.where?.unaryFilter);
+    } else if (_structuredQuery.where?.fieldFilter != null) {
+      filters.add(_structuredQuery.where?.fieldFilter);
     }
 
     void addUnaryFilter(String field, UnaryOperator operator) {
@@ -526,7 +526,7 @@ class Query {
       String centerHash = center.geohash.substring(0, precision);
       _geoSearchArea = Util.neighbors(centerHash)..add(centerHash);
       _geoFieldName = field;
-      structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];
+      _structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];
     }
 
     dynamic hasInequality;
@@ -541,12 +541,12 @@ class Query {
         // Initial orderBy() parameter has to match every where() fieldPath parameter when
         // inequality operator is invoked
         if (filter.op.isInequality() &&
-            structuredQuery.orderBy != null &&
-            structuredQuery.orderBy.isNotEmpty) {
+            _structuredQuery.orderBy != null &&
+            _structuredQuery.orderBy.isNotEmpty) {
           assert(
-              filter.field == structuredQuery.orderBy[0].field,
+              filter.field == _structuredQuery.orderBy[0].field,
               "The initial orderBy() field "
-              "'${structuredQuery.orderBy[0].field}' has to be the same as the "
+              "'${_structuredQuery.orderBy[0].field}' has to be the same as the "
               "where() field parameter '${filter.field}' "
               "when an inequality operator is invoked.");
         }
@@ -627,9 +627,8 @@ class Query {
     }
 
     if (filters.length > 1) {
-      structuredQuery.where = Filter(
-        compositeFilter: CompositeFilter(
-          CompositeOperator.and,
+      _structuredQuery.where = Filter(
+        compositeFilter: CompositeFilter.and(
           filters
               .map((filter) => filter is UnaryFilter
                   ? Filter(unaryFilter: filter)
@@ -638,7 +637,7 @@ class Query {
         ),
       );
     } else if (filters.length > 0) {
-      structuredQuery.where = filters.first is UnaryFilter
+      _structuredQuery.where = filters.first is UnaryFilter
           ? Filter(unaryFilter: filters.first)
           : Filter(fieldFilter: filters.first);
     }

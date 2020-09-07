@@ -56,14 +56,14 @@ class Value {
     if (value is Uint64List) return Value(bytesValue: base64Encode(value));
     if (value is DocumentReference) {
       return Value(
-        referenceValue: 'projects/${value.firestore.app.options.projectId}'
+        referenceValue: 'projects/${value._firestore.app.options.projectId}'
             '/databases/(default)'
             '/documents/${value.path}',
       );
     }
     if (value is CollectionReference) {
       return Value(
-        referenceValue: 'projects/${value.firestore.app.options.projectId}'
+        referenceValue: 'projects/${value._firestore.app.options.projectId}'
             '/databases/(default)'
             '/documents/${value.path}',
       );

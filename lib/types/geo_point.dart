@@ -12,6 +12,8 @@ class GeoPoint {
 
   Map<String, dynamic> toJson() => _$GeoPointToJson(this);
 
+  double distanceTo(GeoPoint point) => Util.calcDistance(this, point);
+
   @override
   String toString() {
     return '[${latitude.toStringAsFixed(3)}° N, ${longitude.toStringAsFixed(3)}° E]';

@@ -30,7 +30,7 @@ class DocumentSnapshot {
   /// at the specified path, a [StateError] will be thrown.
   dynamic get(String field) {
     if (field == '__name__') {
-      return 'projects/${reference.firestore.app.options.projectId}'
+      return 'projects/${reference._firestore.app.options.projectId}'
           '/databases/(default)'
           '/documents/${reference.path}';
     }

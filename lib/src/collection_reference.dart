@@ -12,17 +12,17 @@ class CollectionReference extends Query {
   ///
   /// If this collection is a root collection, `null` is returned.
   DocumentReference get parent {
-    if (components.length <= 1) return null;
+    if (_components.length <= 1) return null;
 
     return DocumentReference._(
-      firestore,
-      components.take(components.length - 1),
+      _firestore,
+      _components.take(_components.length - 1),
     );
   }
 
   /// A string containing the slash-separated path to this  CollectionReference
   /// (relative to the root of the database).
-  String get path => components.join('/');
+  String get path => _components.join('/');
 
   /// Returns a `DocumentReference` with an auto-generated ID, after
   /// populating it with provided [data].
@@ -35,17 +35,17 @@ class CollectionReference extends Query {
   }) async {
     assert(data != null);
     final res = await RestApi.createDocument(
-      components.join('/'),
+      _components.join('/'),
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
-      projectId: firestore.app.options.projectId,
+      projectId: _firestore.app.options.projectId,
       headers: headers,
     );
 
     return DocumentReference._(
-      firestore,
-      components.followedBy([res.name.split('/').last]),
+      _firestore,
+      _components.followedBy([res.name.split('/').last]),
     );
 
     // final DocumentReference newDocument = doc();
@@ -68,20 +68,20 @@ class CollectionReference extends Query {
     }
 
     return DocumentReference._(
-      firestore,
-      components.followedBy(path.split('/')),
+      _firestore,
+      _components.followedBy(path.split('/')),
     );
   }
 
   @override
   bool operator ==(dynamic o) =>
       o is CollectionReference &&
-      o.firestore == firestore &&
-      o.components == components;
+      o._firestore == _firestore &&
+      o._components == _components;
 
   @override
-  int get hashCode => hash2(firestore, components);
+  int get hashCode => hash2(_firestore, _components);
 
   @override
-  String toString() => '$CollectionReference($components)';
+  String toString() => '$CollectionReference($_components)';
 }

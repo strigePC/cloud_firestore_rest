@@ -1,8 +1,11 @@
 part of cloud_firestore_rest;
 
+/// Options for creating a new transaction.
 @JsonSerializable()
 class TransactionOptions {
+  /// The transaction can only be used for read operations.
   final ReadOnly readOnly;
+  /// The transaction can be used for both read and write operations.
   final ReadWrite readWrite;
 
   TransactionOptions(this.readOnly, this.readWrite)
@@ -19,6 +22,11 @@ class TransactionOptions {
 
 @JsonSerializable()
 class ReadOnly {
+  /// Reads documents at the given time. This may not be older than 60 seconds.
+  ///
+  /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
+  /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
+  /// "2014-10-02T15:01:23.045123456Z".
   final DateTime readTime;
 
   ReadOnly(this.readTime)
@@ -37,9 +45,12 @@ class ReadOnly {
 
 @JsonSerializable()
 class ReadWrite {
+  /// An optional transaction to retry.
+  ///
+  /// A base64-encoded string.
   final String retryTransaction;
 
-  ReadWrite(this.retryTransaction);
+  ReadWrite({this.retryTransaction});
 
   factory ReadWrite.fromJson(Map<String, dynamic> json) =>
       _$ReadWriteFromJson(json);

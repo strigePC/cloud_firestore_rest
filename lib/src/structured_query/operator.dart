@@ -1,12 +1,17 @@
 part of cloud_firestore_rest;
 
+/// A composite filter operator.
 enum CompositeOperator {
+  /// Unspecified. This value must not be used.
   @JsonValue('OPERATOR_UNSPECIFIED')
   operatorUnspecified,
+
+  /// The results are required to satisfy each of the combined filters.
   @JsonValue('AND')
   and,
 }
 
+/// A field filter operator.
 enum FieldOperator {
   @JsonValue('OPERATOR_UNSPECIFIED')
   operatorUnspecified,
@@ -39,6 +44,7 @@ extension Checkers on FieldOperator {
   }
 }
 
+/// A filter with a single operand.
 enum UnaryOperator {
   @JsonValue('OPERATOR_UNSPECIFIED')
   operatorUnspecified,

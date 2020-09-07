@@ -1,12 +1,6 @@
 part of cloud_firestore_rest;
 
 class Util {
-  static const BASE32_CODES = '0123456789bcdefghjkmnpqrstuvwxyz';
-
-  static final instance = Util._();
-
-  Util._();
-
   /// Encode
   /// Create a geohash from latitude and longitude
   /// that is 'number of chars' long
@@ -59,7 +53,8 @@ class Util {
       bits++;
       bitsTotal++;
       if (bits == 5) {
-        var code = BASE32_CODES[hashValue];
+        final base32Codes = '0123456789bcdefghjkmnpqrstuvwxyz';
+        var code = base32Codes[hashValue];
         chars.add(code);
         bits = 0;
         hashValue = 0;
@@ -81,9 +76,10 @@ class Util {
     var hashValue = 0;
     for (var i = 0, l = hashString.length; i < l; i++) {
       var code = hashString[i].toLowerCase();
+      final base32Codes = '0123456789bcdefghjkmnpqrstuvwxyz';
       Map<String, int> base32CodesDic = new Map();
-      for (var i = 0; i < BASE32_CODES.length; i++) {
-        base32CodesDic.putIfAbsent(BASE32_CODES[i], () => i);
+      for (var i = 0; i < base32Codes.length; i++) {
+        base32CodesDic.putIfAbsent(base32Codes[i], () => i);
       }
       hashValue = base32CodesDic[code];
 
@@ -136,7 +132,7 @@ class Util {
   /// direction [lat, lon], i.e.
   /// [1,0] - north
   /// [1,1] - northeast
-  String neighbor(String hashString, var direction) {
+  static String neighbor(String hashString, var direction) {
     var lonLat = decode(hashString);
     var neighborLat =
         lonLat['latitude'] + direction[0] * lonLat['latitudeError'] * 2;

@@ -20,7 +20,7 @@ class WriteBatch {
   /// Deletes the document referred to by [document].
   void delete(DocumentReference document) {
     assert(document != null);
-    assert(document.firestore == _firestore,
+    assert(document._firestore == _firestore,
         "the document provided is from a different Firestore instance");
 
     _writes.add(Write(
@@ -44,7 +44,7 @@ class WriteBatch {
   }) {
     assert(document != null);
     assert(data != null);
-    assert(document.firestore == _firestore,
+    assert(document._firestore == _firestore,
         "the document provided is from a different Firestore instance");
 
     DocumentMask mask;
@@ -73,7 +73,7 @@ class WriteBatch {
   void update(DocumentReference document, Map<String, dynamic> data) {
     assert(document != null);
     assert(data != null);
-    assert(document.firestore == _firestore,
+    assert(document._firestore == _firestore,
         "the document provided is from a different Firestore instance");
 
     _writes.add(Write(

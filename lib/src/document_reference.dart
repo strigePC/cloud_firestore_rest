@@ -2,18 +2,18 @@ part of cloud_firestore_rest;
 
 class DocumentReference {
   /// The Firestore instance associated with this document reference.
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
 
   /// This document's given ID within the collection.
   final String id;
   final List<String> components;
 
-  DocumentReference._(this.firestore, this.components) : id = components.last;
+  DocumentReference._(this._firestore, this.components) : id = components.last;
 
   /// The parent [CollectionReference] of this document.
   CollectionReference get parent {
     return CollectionReference._(
-      firestore,
+      _firestore,
       components.take(components.length - 1),
     );
   }
@@ -34,7 +34,7 @@ class DocumentReference {
         "a collection path must point to a valid collection.");
 
     return CollectionReference._(
-      firestore,
+      _firestore,
       components.followedBy(collectionPath.split('/')),
     );
   }
@@ -43,7 +43,7 @@ class DocumentReference {
   Future<void> delete({Map<String, String> headers}) async {
     await RestApi.delete(
       components.join('/'),
-      projectId: firestore.app.options.projectId,
+      projectId: _firestore.app.options.projectId,
       headers: headers,
     );
   }
@@ -57,7 +57,7 @@ class DocumentReference {
     final res = await RestApi.get(
       components.join('/'),
       headers: headers,
-      projectId: firestore.app.options.projectId,
+      projectId: _firestore.app.options.projectId,
     );
 
     return DocumentSnapshot._(
@@ -101,7 +101,7 @@ class DocumentReference {
     await RestApi.patch(
       components.join(),
       headers: headers,
-      projectId: firestore.app.options.projectId,
+      projectId: _firestore.app.options.projectId,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
@@ -122,7 +122,7 @@ class DocumentReference {
     await RestApi.patch(
       components.join(),
       headers: headers,
-      projectId: firestore.app.options.projectId,
+      projectId: _firestore.app.options.projectId,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
@@ -133,10 +133,10 @@ class DocumentReference {
 
   @override
   bool operator ==(dynamic o) =>
-      o is DocumentReference && o.firestore == firestore && o.path == path;
+      o is DocumentReference && o._firestore == _firestore && o.path == path;
 
   @override
-  int get hashCode => hash2(firestore, path);
+  int get hashCode => hash2(_firestore, path);
 
   @override
   String toString() => '$DocumentReference($path)';

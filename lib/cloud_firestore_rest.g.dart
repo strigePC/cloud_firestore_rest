@@ -311,7 +311,7 @@ Map<String, dynamic> _$ReadOnlyToJson(ReadOnly instance) {
 
 ReadWrite _$ReadWriteFromJson(Map<String, dynamic> json) {
   return ReadWrite(
-    json['retryTransaction'] as String,
+    retryTransaction: json['retryTransaction'] as String,
   );
 }
 

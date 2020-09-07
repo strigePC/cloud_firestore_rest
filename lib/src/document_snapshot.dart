@@ -16,6 +16,13 @@ class DocumentSnapshot {
     this._data,
   );
 
+  DocumentSnapshot(
+    this.id,
+    this.reference, {
+    this.exists,
+    Map<String, dynamic> data,
+  }) : _data = data;
+
   /// Metadata about this [DocumentSnapshot] concerning its source and if it has local
   /// modifications.
   // SnapshotMetadata get metadata => SnapshotMetadata._(_delegate.metadata);

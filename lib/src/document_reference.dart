@@ -3,6 +3,7 @@ part of cloud_firestore_rest;
 class DocumentReference {
   /// The Firestore instance associated with this document reference.
   final FirebaseFirestore _firestore;
+  List<String> _fields;
 
   /// This document's given ID within the collection.
   final String id;
@@ -48,6 +49,12 @@ class DocumentReference {
     );
   }
 
+  DocumentReference fields(List<String> fields) {
+    assert(fields != null);
+    _fields = fields;
+    return this;
+  }
+
   /// Reads the document referenced by this [DocumentReference].
   ///
   /// By providing [options], this method can be configured to fetch results only
@@ -55,10 +62,14 @@ class DocumentReference {
   /// from the server and fall back to the cache (which is the default).
   Future<DocumentSnapshot> get({Map<String, String> headers}) async {
     try {
+      DocumentMask mask;
+      if (_fields != null && _fields.isNotEmpty) mask = DocumentMask(_fields);
+
       final res = await RestApi.get(
         components.join('/'),
         headers: headers,
         projectId: _firestore.app.options.projectId,
+        mask: mask,
       );
 
       return DocumentSnapshot._(

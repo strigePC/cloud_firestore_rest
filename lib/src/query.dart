@@ -195,7 +195,7 @@ class Query {
               result.document.name.split('/').last,
               DocumentReference._(
                 _firestore,
-                result.document.name.split('/').skip(5),
+                result.document.name.split('/').skip(5).toList(),
               ),
               result.document.fields
                   .map((key, value) => MapEntry(key, value.decode)),

@@ -4,6 +4,7 @@ class DocumentSnapshot {
   /// This document's given ID for this snapshot.
   final String id;
   final bool exists;
+
   /// [DocumentReference] of this snapshot.
   final DocumentReference reference;
   final Map<String, dynamic> _data;
@@ -14,7 +15,6 @@ class DocumentSnapshot {
     this.reference,
     this._data,
   );
-
 
   /// Metadata about this [DocumentSnapshot] concerning its source and if it has local
   /// modifications.
@@ -28,5 +28,20 @@ class DocumentSnapshot {
   /// Data can be accessed by providing a dot-notated path or [FieldPath]
   /// which recursively finds the specified data. If no data could be found
   /// at the specified path, a [StateError] will be thrown.
-  dynamic get(String field) => _data[field];
+  dynamic get(String field) {
+    try {
+      if (field.indexOf('.') == -1) return _data[field];
+
+      dynamic subsetData = _data;
+      var subsetPath = field.split('.');
+
+      while (subsetPath.isNotEmpty) {
+        subsetData = subsetData[subsetPath.removeAt(0)];
+      }
+
+      return subsetData;
+    } on NoSuchMethodError catch (_) {
+      throw StateError('No data could be found at the specified path ($field)');
+    }
+  }
 }

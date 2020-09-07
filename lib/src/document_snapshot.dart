@@ -29,6 +29,12 @@ class DocumentSnapshot {
   /// which recursively finds the specified data. If no data could be found
   /// at the specified path, a [StateError] will be thrown.
   dynamic get(String field) {
+    if (field == '__name__') {
+      return 'projects/${reference.firestore.app.options.projectId}'
+          '/databases/(default)'
+          '/documents/${reference.path}';
+    }
+
     try {
       if (field.indexOf('.') == -1) return _data[field];
 

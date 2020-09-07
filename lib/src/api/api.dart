@@ -366,7 +366,7 @@ class RestApi {
     final path = StringBuffer('projects/$projectId'
         '/databases/$databaseId'
         '/documents');
-    if (documentPath != null) {
+    if (documentPath != null && documentPath.isNotEmpty) {
       path.write('/$documentPath');
     }
     _assertPathFormat(path.toString());

@@ -54,18 +54,26 @@ class DocumentReference {
   /// from the server, only from the local cache or attempt to fetch results
   /// from the server and fall back to the cache (which is the default).
   Future<DocumentSnapshot> get({Map<String, String> headers}) async {
-    final res = await RestApi.get(
-      components.join('/'),
-      headers: headers,
-      projectId: _firestore.app.options.projectId,
-    );
+    try {
+      final res = await RestApi.get(
+        components.join('/'),
+        headers: headers,
+        projectId: _firestore.app.options.projectId,
+      );
 
-    return DocumentSnapshot._(
-      id,
-      true,
-      this,
-      res.fields.map((key, value) => MapEntry(key, value.decode)),
-    );
+      return DocumentSnapshot._(
+        id,
+        true,
+        this,
+        res.fields.map((key, value) => MapEntry(key, value.decode)),
+      );
+    } on FirebaseException catch (e) {
+      if (e.code == '404') {
+        return DocumentSnapshot._(id, false, this, null);
+      } else {
+        rethrow;
+      }
+    }
   }
 
   /// Notifies of document updates at this location.

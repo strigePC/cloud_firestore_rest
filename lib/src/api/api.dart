@@ -401,7 +401,7 @@ class RestApi {
     }
 
     return (json as List)
-        .where((e) => e['name'] != null)
+        .where((e) => e['document'] != null)
         .map((e) => RunQueryResponse.fromJson(e))
         .toList();
   }

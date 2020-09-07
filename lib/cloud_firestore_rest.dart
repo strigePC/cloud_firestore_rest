@@ -1,6 +1,7 @@
 library cloud_firestore_rest;
 
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -27,7 +28,6 @@ part 'src/document_reference.dart';
 part 'src/document_snapshot.dart';
 part 'src/firestore.dart';
 part 'src/query.dart';
-part 'src/query_document_snapshot.dart';
 part 'src/query_snapshot.dart';
 part 'src/set_options.dart';
 part 'src/structured_query/collection_selector.dart';
@@ -40,6 +40,7 @@ part 'src/structured_query/order.dart';
 part 'src/structured_query/projection.dart';
 part 'src/structured_query/structured_query.dart';
 part 'src/structured_query/value.dart';
+part 'src/util.dart';
 part 'src/write_batch.dart';
 part 'types/geo_point.dart';
 

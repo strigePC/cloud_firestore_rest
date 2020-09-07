@@ -1,7 +1,7 @@
 part of cloud_firestore_rest;
 
 class QuerySnapshot {
-  final List<QueryDocumentSnapshot> docs;
+  final List<DocumentSnapshot> docs;
 
   QuerySnapshot._(this.docs);
 

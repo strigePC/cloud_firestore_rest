@@ -831,3 +831,26 @@ Map<String, dynamic> _$GeoPointToJson(GeoPoint instance) {
   writeNotNull('longitude', instance.longitude);
   return val;
 }
+
+GeoFirePoint _$GeoFirePointFromJson(Map<String, dynamic> json) {
+  return GeoFirePoint(
+    json['geopoint'] == null
+        ? null
+        : GeoPoint.fromJson(json['geopoint'] as Map<String, dynamic>),
+    json['geohash'] as String,
+  );
+}
+
+Map<String, dynamic> _$GeoFirePointToJson(GeoFirePoint instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('geopoint', instance.geopoint?.toJson());
+  writeNotNull('geohash', instance.geohash);
+  return val;
+}

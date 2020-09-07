@@ -17,3 +17,23 @@ class GeoPoint {
     return '[${latitude.toStringAsFixed(3)}° N, ${longitude.toStringAsFixed(3)}° E]';
   }
 }
+
+@JsonSerializable()
+class GeoFirePoint {
+  final GeoPoint geopoint;
+  final String geohash;
+
+  GeoFirePoint(this.geopoint, this.geohash);
+
+  GeoFirePoint.fromGeoPoint(this.geopoint)
+      : geohash = Util.encode(
+          geopoint.latitude,
+          geopoint.longitude,
+          numberOfChars: 9,
+        );
+
+  factory GeoFirePoint.fromJson(Map<String, dynamic> json) =>
+      _$GeoFirePointFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GeoFirePointToJson(this);
+}

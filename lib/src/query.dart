@@ -6,6 +6,10 @@ class Query {
   final StructuredQuery structuredQuery = StructuredQuery();
   final List<String> components;
 
+  List<String> _geoSearchArea;
+  String _geoFieldName;
+  GeoPoint _geoCenter;
+
   Query._(this.firestore, this.components);
 
   /// Returns whether the current query has a "start" cursor query.
@@ -73,6 +77,8 @@ class Query {
 
   /// Common handler for all non-document based cursor queries.
   void _assertQueryCursorValues(List<dynamic> fields) {
+    assert(_geoSearchArea == null,
+        'cursors (startAt, endAt, etc.) cannot be used on geo queries');
     assert(
       structuredQuery.orderBy != null,
       'orderBy() method should be called before setting cursors',
@@ -176,23 +182,52 @@ class Query {
   Future<QuerySnapshot> get({Map<String, String> headers}) async {
     structuredQuery.from = [CollectionSelector(components.last)];
 
-    final res = await RestApi.runQuery(
-      components.take(components.length - 1).join('/'),
-      projectId: firestore.app.options.projectId,
-      structuredQuery: structuredQuery,
-    );
+    if (_geoSearchArea == null) {
+      final res = await RestApi.runQuery(
+        components.take(components.length - 1).join('/'),
+        projectId: firestore.app.options.projectId,
+        structuredQuery: structuredQuery,
+      );
 
-    return QuerySnapshot._(res
-        .map(
-          (e) => QueryDocumentSnapshot._(
-            e.document.name,
-            null,
-            e.document.fields.map(
-              (key, value) => MapEntry(key, value.decode),
+      return QuerySnapshot._(res
+          .map(
+            (e) => QueryDocumentSnapshot._(
+              e.document.name,
+              null,
+              e.document.fields.map(
+                (key, value) => MapEntry(key, value.decode),
+              ),
             ),
-          ),
-        )
-        .toList());
+          )
+          .toList());
+    } else {
+      final res = await Future.wait(_geoSearchArea.map((hash) {
+        final query = Query._(firestore, components);
+        query.structuredQuery.select = structuredQuery.select;
+        query.structuredQuery.limit = structuredQuery.limit;
+        query.structuredQuery.from = structuredQuery.from;
+        query.structuredQuery.where = structuredQuery.where;
+        query.structuredQuery.orderBy = structuredQuery.orderBy;
+        query.structuredQuery.startAt = Cursor([Value.fromValue(hash)], false);
+        query.structuredQuery.endAt =
+            Cursor([Value.fromValue('$hash~')], false);
+
+        return query.get(headers: headers);
+      }));
+
+      return QuerySnapshot._(res
+          .expand((snapshot) => snapshot.docs)
+          .map((snapshot) => DistanceDocumentSnapshot._(
+                id: snapshot.id,
+                data: snapshot._data,
+                reference: snapshot.reference,
+                distance: Util.calcDistance(
+                  snapshot.get('$_geoFieldName.geo'),
+                  _geoCenter,
+                ),
+              ))
+          .toList());
+    }
   }
 
   /// Creates and returns a new Query that's additionally limited to only return up
@@ -253,6 +288,7 @@ class Query {
         "Invalid query. You must not call startAt(), startAtDocument(), startAfter() or startAfterDocument() before calling orderBy()");
     assert(!_hasEndCursor(),
         "Invalid query. You must not call endAt(), endAtDocument(), endBefore() or endBeforeDocument() before calling orderBy()");
+    assert(_geoSearchArea == null, 'orderBy() cannot be used on geo queries');
 
     final orders = structuredQuery.orderBy ?? [];
 
@@ -409,7 +445,14 @@ class Query {
     List<dynamic> arrayContainsAny,
     List<dynamic> whereIn,
     bool isNull,
+    double isWithin,
+    GeoPoint centeredAt,
   }) {
+    assert(
+      (isWithin == null && centeredAt == null) ||
+          (isWithin != null && centeredAt != null),
+      'centeredAt and isWithin parameters must be used together',
+    );
     final filters = <SingularFieldFilter>[];
     if (structuredQuery.where?.compositeFilter != null) {
       for (final filter in structuredQuery.where.compositeFilter.filters) {
@@ -473,6 +516,15 @@ class Query {
           'isNull can only be set to true. '
           'Use isEqualTo to filter on non-null values.');
       addUnaryFilter(field, UnaryOperator.isNull);
+    }
+    GeoFirePoint center;
+    if (centeredAt != null && isWithin != null) {
+      center = GeoFirePoint.fromGeoPoint(centeredAt);
+      int precision = Util.setPrecision(isWithin);
+      String centerHash = center.geohash.substring(0, precision);
+      _geoSearchArea = Util.neighbors(centerHash)..add(centerHash);
+      _geoFieldName = field;
+      structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];
     }
 
     dynamic hasInequality;

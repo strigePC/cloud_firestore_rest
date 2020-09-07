@@ -290,7 +290,9 @@ Map<String, dynamic> _$TransactionOptionsToJson(TransactionOptions instance) {
 
 ReadOnly _$ReadOnlyFromJson(Map<String, dynamic> json) {
   return ReadOnly(
-    json['readTime'] as String,
+    json['readTime'] == null
+        ? null
+        : DateTime.parse(json['readTime'] as String),
   );
 }
 
@@ -303,7 +305,7 @@ Map<String, dynamic> _$ReadOnlyToJson(ReadOnly instance) {
     }
   }
 
-  writeNotNull('readTime', instance.readTime);
+  writeNotNull('readTime', instance.readTime?.toIso8601String());
   return val;
 }
 
@@ -403,13 +405,13 @@ Document _$DocumentFromJson(Map<String, dynamic> json) {
       (k, e) => MapEntry(
           k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
     ),
-  )
-    ..createTime = json['createTime'] == null
+    createTime: json['createTime'] == null
         ? null
-        : DateTime.parse(json['createTime'] as String)
-    ..updateTime = json['updateTime'] == null
+        : DateTime.parse(json['createTime'] as String),
+    updateTime: json['updateTime'] == null
         ? null
-        : DateTime.parse(json['updateTime'] as String);
+        : DateTime.parse(json['updateTime'] as String),
+  );
 }
 
 Map<String, dynamic> _$DocumentToJson(Document instance) {

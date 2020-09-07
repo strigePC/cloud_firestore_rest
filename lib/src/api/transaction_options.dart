@@ -19,12 +19,18 @@ class TransactionOptions {
 
 @JsonSerializable()
 class ReadOnly {
-  final String readTime;
+  final DateTime readTime;
 
-  ReadOnly(this.readTime);
+  ReadOnly(this.readTime)
+      : assert(readTime == null || readTime.isUtc,
+            'readTime should be in UTC format');
 
-  factory ReadOnly.fromJson(Map<String, dynamic> json) =>
-      _$ReadOnlyFromJson(json);
+  factory ReadOnly.fromJson(Map<String, dynamic> json) {
+    final result = _$ReadOnlyFromJson(json);
+    assert(result.readTime == null || result.readTime.isUtc,
+        'readTime should be in UTC format');
+    return result;
+  }
 
   Map<String, dynamic> toJson() => _$ReadOnlyToJson(this);
 }

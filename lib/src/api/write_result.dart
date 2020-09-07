@@ -18,10 +18,16 @@ class WriteResult {
   /// in the same order.
   final List<Value> transformResults;
 
-  WriteResult(this.updateTime, this.transformResults);
+  WriteResult(this.updateTime, this.transformResults)
+      : assert(updateTime == null || updateTime.isUtc,
+            'updateTime should be in UTC format');
 
-  factory WriteResult.fromJson(Map<String, dynamic> json) =>
-      _$WriteResultFromJson(json);
+  factory WriteResult.fromJson(Map<String, dynamic> json) {
+    final result = _$WriteResultFromJson(json);
+    assert(result.updateTime == null || result.updateTime.isUtc,
+        'updateTime should be in UTC format');
+    return result;
+  }
 
   Map<String, dynamic> toJson() => _$WriteResultToJson(this);
 }

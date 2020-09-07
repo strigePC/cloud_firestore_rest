@@ -19,10 +19,16 @@ class Precondition {
       : assert(exists != null || updateTime != null,
             'At least one of the fields (exists, updateTime) should be set'),
         assert(exists == null || updateTime == null,
-            'You should use either exists or updateTime, not both');
+            'You should use either exists or updateTime, not both'),
+        assert(updateTime == null || updateTime.isUtc,
+            'updateTime should be in UTC format');
 
-  factory Precondition.fromJson(Map<String, dynamic> json) =>
-      _$PreconditionFromJson(json);
+  factory Precondition.fromJson(Map<String, dynamic> json) {
+    final result = _$PreconditionFromJson(json);
+    assert(result.updateTime == null || result.updateTime.isUtc,
+        'updateTime should be in UTC format');
+    return result;
+  }
 
   Map<String, dynamic> toJson() => _$PreconditionToJson(this);
 }

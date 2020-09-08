@@ -88,7 +88,10 @@ class Value {
     if (bytesValue != null) return base64Decode(bytesValue);
   }
 
-  factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
+  factory Value.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('nullValue')) json['nullValue'] = true;
+    return _$ValueFromJson(json);
+  }
 
   Map<String, dynamic> toJson() => _$ValueToJson(this);
 

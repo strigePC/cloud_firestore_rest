@@ -118,7 +118,7 @@ class DocumentReference {
     }
 
     await RestApi.patch(
-      components.join(),
+      components.join('/'),
       headers: headers,
       projectId: _firestore.app.options.projectId,
       body: Document(
@@ -139,7 +139,7 @@ class DocumentReference {
     assert(data != null);
 
     await RestApi.patch(
-      components.join(),
+      components.join('/'),
       headers: headers,
       projectId: _firestore.app.options.projectId,
       body: Document(

@@ -187,6 +187,7 @@ class Query {
         _components.take(_components.length - 1).join('/'),
         projectId: _firestore.app.options.projectId,
         structuredQuery: structuredQuery,
+        headers: headers,
       );
 
       return QuerySnapshot._(results

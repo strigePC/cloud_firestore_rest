@@ -34,16 +34,6 @@ class Query {
     final orders = List.from(structuredQuery.orderBy ?? []);
     List<dynamic> values = [];
 
-    for (final Order order in orders) {
-      if (order.field.fieldPath != '__name__') {
-        try {
-          values.add(documentSnapshot.reference);
-        } on StateError {
-          throw ("You are trying to start or end a query using a document for which the field '${order.field}' (used as the orderBy) does not exist.");
-        }
-      }
-    }
-
     // Any time you construct a query and don't include 'name' in the orderBys,
     // Firestore will implicitly assume an additional .orderBy('__name__', DIRECTION)
     // where DIRECTION will match the last orderBy direction of your query (or 'asc' if you have no orderBys).
@@ -61,6 +51,16 @@ class Query {
         FieldReference('__name__'),
         direction: Direction.ascending,
       ));
+    }
+
+    for (final Order order in orders) {
+      if (order.field.fieldPath != '__name__') {
+        try {
+          values.add(documentSnapshot.reference);
+        } on StateError {
+          throw ("You are trying to start or end a query using a document for which the field '${order.field}' (used as the orderBy) does not exist.");
+        }
+      }
     }
     //
     // if (_delegate.isCollectionGroupQuery) {

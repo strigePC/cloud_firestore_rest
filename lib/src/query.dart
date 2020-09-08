@@ -31,8 +31,18 @@ class Query {
         "a document snapshot must exist to be used within a query");
 
     // List<List<dynamic>> orders = List.from(parameters['orderBy']);
-    final orders = List.from(structuredQuery.orderBy ?? []);
+    final orders = List<Order>.from(structuredQuery.orderBy ?? []);
     List<dynamic> values = [];
+
+    for (final Order order in orders) {
+      if (order.field.fieldPath != '__name__') {
+        try {
+          values.add(documentSnapshot.get(order.field.fieldPath));
+        } on StateError {
+          throw ("You are trying to start or end a query using a document for which the field '${order.field}' (used as the orderBy) does not exist.");
+        }
+      }
+    }
 
     // Any time you construct a query and don't include 'name' in the orderBys,
     // Firestore will implicitly assume an additional .orderBy('__name__', DIRECTION)
@@ -52,16 +62,7 @@ class Query {
         direction: Direction.ascending,
       ));
     }
-
-    for (final Order order in orders) {
-      if (order.field.fieldPath != '__name__') {
-        try {
-          values.add(documentSnapshot.reference);
-        } on StateError {
-          throw ("You are trying to start or end a query using a document for which the field '${order.field}' (used as the orderBy) does not exist.");
-        }
-      }
-    }
+    values.add(documentSnapshot.reference);
     //
     // if (_delegate.isCollectionGroupQuery) {
     //   values.add(documentSnapshot.reference.path);
@@ -111,7 +112,9 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.endAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)).toList(),
+      (results['values'] as List<dynamic>)
+          .map((value) => Value.fromValue(value))
+          .toList(),
       false,
     );
     structuredQuery.orderBy = results['orders'];
@@ -144,7 +147,9 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.endAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)).toList(),
+      (results['values'] as List<dynamic>)
+          .map((value) => Value.fromValue(value))
+          .toList(),
       true,
     );
     structuredQuery.orderBy = results['orders'];
@@ -370,7 +375,9 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.startAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)).toList(),
+      (results['values'] as List<dynamic>)
+          .map((value) => Value.fromValue(value))
+          .toList(),
       false,
     );
     structuredQuery.orderBy = results['orders'];
@@ -403,7 +410,9 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.startAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)).toList(),
+      (results['values'] as List<dynamic>)
+          .map((value) => Value.fromValue(value))
+          .toList(),
       true,
     );
     structuredQuery.orderBy = results['orders'];

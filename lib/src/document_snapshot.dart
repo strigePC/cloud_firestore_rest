@@ -19,7 +19,7 @@ class DocumentSnapshot {
   DocumentSnapshot(
     this.id,
     this.reference, {
-    this.exists,
+    this.exists = true,
     Map<String, dynamic> data,
   }) : _data = data;
 

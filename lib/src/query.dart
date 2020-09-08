@@ -224,7 +224,7 @@ class Query {
                 data: snapshot._data,
                 reference: snapshot.reference,
                 distance: Util.calcDistance(
-                  snapshot.get('$_geoFieldName.geo'),
+                  snapshot.get('$_geoFieldName.geopoint'),
                   _geoCenter,
                 ),
               ))
@@ -519,9 +519,9 @@ class Query {
           'Use isEqualTo to filter on non-null values.');
       addUnaryFilter(field, UnaryOperator.isNull);
     }
-    GeoFirePoint center;
     if (centeredAt != null && isWithin != null) {
-      center = GeoFirePoint.fromGeoPoint(centeredAt);
+      final center = GeoFirePoint.fromGeoPoint(centeredAt);
+      _geoCenter = centeredAt;
       int precision = Util.setPrecision(isWithin);
       String centerHash = center.geohash.substring(0, precision);
       _geoSearchArea = Util.neighbors(centerHash)..add(centerHash);

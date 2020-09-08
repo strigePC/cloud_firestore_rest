@@ -111,7 +111,7 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.endAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)),
+      results.values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
     structuredQuery.orderBy = results['orders'];
@@ -144,7 +144,7 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.endAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)),
+      results.values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
     structuredQuery.orderBy = results['orders'];
@@ -370,7 +370,7 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.startAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)),
+      results.values.map((value) => Value.fromValue(value)).toList(),
       false,
     );
     structuredQuery.orderBy = results['orders'];
@@ -403,7 +403,7 @@ class Query {
     Map<String, dynamic> results = _assertQueryCursorSnapshot(documentSnapshot);
 
     structuredQuery.startAt = Cursor(
-      results.values.map((value) => Value.fromValue(value)),
+      results.values.map((value) => Value.fromValue(value)).toList(),
       true,
     );
     structuredQuery.orderBy = results['orders'];

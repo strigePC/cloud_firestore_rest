@@ -23,6 +23,7 @@ class RunQueryResponse {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime readTime;
 
   /// The number of results that have been skipped due to an offset between the
@@ -30,16 +31,10 @@ class RunQueryResponse {
   final int skippedResults;
 
   RunQueryResponse(
-      this.transaction, this.document, this.readTime, this.skippedResults)
-      : assert(readTime == null || readTime.isUtc,
-            'readTime should be in UTC format');
+      this.transaction, this.document, this.readTime, this.skippedResults);
 
-  factory RunQueryResponse.fromJson(Map<String, dynamic> json) {
-    final result = _$RunQueryResponseFromJson(json);
-    assert(result.readTime == null || result.readTime.isUtc,
-        'readTime should be in UTC format');
-    return result;
-  }
+  factory RunQueryResponse.fromJson(Map<String, dynamic> json) =>
+      _$RunQueryResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$RunQueryResponseToJson(this);
 }

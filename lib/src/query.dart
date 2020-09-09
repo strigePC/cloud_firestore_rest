@@ -229,7 +229,7 @@ class Query {
                 id: snapshot.id,
                 data: snapshot._data,
                 reference: snapshot.reference,
-                distance: Util.calcDistance(
+                distance: _Util.calcDistance(
                   snapshot.get('$_geoFieldName.geopoint'),
                   _geoCenter,
                 ),
@@ -532,9 +532,9 @@ class Query {
     if (centeredAt != null && isWithin != null) {
       final center = GeoFirePoint.fromGeoPoint(centeredAt);
       _geoCenter = centeredAt;
-      int precision = Util.setPrecision(isWithin);
+      int precision = _Util.setPrecision(isWithin);
       String centerHash = center.geohash.substring(0, precision);
-      _geoSearchArea = Util.neighbors(centerHash)..add(centerHash);
+      _geoSearchArea = _Util.neighbors(centerHash)..add(centerHash);
       _geoFieldName = field;
       structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];
     }

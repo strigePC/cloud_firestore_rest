@@ -191,9 +191,7 @@ Map<String, dynamic> _$ListDocumentsResponseToJson(
 Precondition _$PreconditionFromJson(Map<String, dynamic> json) {
   return Precondition(
     exists: json['exists'] as bool,
-    updateTime: json['updateTime'] == null
-        ? null
-        : DateTime.parse(json['updateTime'] as String),
+    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String),
   );
 }
 
@@ -207,7 +205,7 @@ Map<String, dynamic> _$PreconditionToJson(Precondition instance) {
   }
 
   writeNotNull('exists', instance.exists);
-  writeNotNull('updateTime', instance.updateTime?.toIso8601String());
+  writeNotNull('updateTime', _Util.dateTimeToJson(instance.updateTime));
   return val;
 }
 
@@ -217,9 +215,7 @@ RunQueryResponse _$RunQueryResponseFromJson(Map<String, dynamic> json) {
     json['document'] == null
         ? null
         : Document.fromJson(json['document'] as Map<String, dynamic>),
-    json['readTime'] == null
-        ? null
-        : DateTime.parse(json['readTime'] as String),
+    _Util.dateTimeFromJson(json['readTime'] as String),
     json['skippedResults'] as int,
   );
 }
@@ -235,7 +231,7 @@ Map<String, dynamic> _$RunQueryResponseToJson(RunQueryResponse instance) {
 
   writeNotNull('transaction', instance.transaction);
   writeNotNull('document', instance.document?.toJson());
-  writeNotNull('readTime', instance.readTime?.toIso8601String());
+  writeNotNull('readTime', _Util.dateTimeToJson(instance.readTime));
   writeNotNull('skippedResults', instance.skippedResults);
   return val;
 }
@@ -290,9 +286,7 @@ Map<String, dynamic> _$TransactionOptionsToJson(TransactionOptions instance) {
 
 ReadOnly _$ReadOnlyFromJson(Map<String, dynamic> json) {
   return ReadOnly(
-    json['readTime'] == null
-        ? null
-        : DateTime.parse(json['readTime'] as String),
+    _Util.dateTimeFromJson(json['readTime'] as String),
   );
 }
 
@@ -305,7 +299,7 @@ Map<String, dynamic> _$ReadOnlyToJson(ReadOnly instance) {
     }
   }
 
-  writeNotNull('readTime', instance.readTime?.toIso8601String());
+  writeNotNull('readTime', _Util.dateTimeToJson(instance.readTime));
   return val;
 }
 
@@ -373,9 +367,7 @@ Map<String, dynamic> _$WriteToJson(Write instance) {
 
 WriteResult _$WriteResultFromJson(Map<String, dynamic> json) {
   return WriteResult(
-    json['updateTime'] == null
-        ? null
-        : DateTime.parse(json['updateTime'] as String),
+    _Util.dateTimeFromJson(json['updateTime'] as String),
     (json['transformResults'] as List)
         ?.map(
             (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
@@ -392,7 +384,7 @@ Map<String, dynamic> _$WriteResultToJson(WriteResult instance) {
     }
   }
 
-  writeNotNull('updateTime', instance.updateTime?.toIso8601String());
+  writeNotNull('updateTime', _Util.dateTimeToJson(instance.updateTime));
   writeNotNull('transformResults',
       instance.transformResults?.map((e) => e?.toJson())?.toList());
   return val;
@@ -405,12 +397,8 @@ Document _$DocumentFromJson(Map<String, dynamic> json) {
       (k, e) => MapEntry(
           k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
     ),
-    createTime: json['createTime'] == null
-        ? null
-        : DateTime.parse(json['createTime'] as String),
-    updateTime: json['updateTime'] == null
-        ? null
-        : DateTime.parse(json['updateTime'] as String),
+    createTime: _Util.dateTimeFromJson(json['createTime'] as String),
+    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String),
   );
 }
 
@@ -426,8 +414,8 @@ Map<String, dynamic> _$DocumentToJson(Document instance) {
   writeNotNull('name', instance.name);
   writeNotNull(
       'fields', instance.fields?.map((k, e) => MapEntry(k, e?.toJson())));
-  writeNotNull('createTime', instance.createTime?.toIso8601String());
-  writeNotNull('updateTime', instance.updateTime?.toIso8601String());
+  writeNotNull('createTime', _Util.dateTimeToJson(instance.createTime));
+  writeNotNull('updateTime', _Util.dateTimeToJson(instance.updateTime));
   return val;
 }
 

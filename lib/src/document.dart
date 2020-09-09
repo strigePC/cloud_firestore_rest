@@ -46,6 +46,7 @@ class Document {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime createTime;
 
   /// Output only. The time at which the document was last changed.
@@ -57,22 +58,13 @@ class Document {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime updateTime;
 
-  Document({this.name, this.fields, this.createTime, this.updateTime})
-      : assert(createTime == null || createTime.isUtc,
-            'createTime should be in UTC format'),
-        assert(updateTime == null || updateTime.isUtc,
-            'updateTime should be in UTC format');
+  Document({this.name, this.fields, this.createTime, this.updateTime});
 
-  factory Document.fromJson(Map<String, dynamic> json) {
-    final result = _$DocumentFromJson(json);
-    assert(result.createTime == null || result.createTime.isUtc,
-        'createTime should be in UTC format');
-    assert(result.updateTime == null || result.updateTime.isUtc,
-        'updateTime should be in UTC format');
-    return result;
-  }
+  factory Document.fromJson(Map<String, dynamic> json) =>
+      _$DocumentFromJson(json);
 
   Map<String, dynamic> toJson() => _$DocumentToJson(this);
 }

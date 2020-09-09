@@ -13,22 +13,17 @@ class Precondition {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime updateTime;
 
   Precondition({this.exists, this.updateTime})
       : assert(exists != null || updateTime != null,
             'At least one of the fields (exists, updateTime) should be set'),
         assert(exists == null || updateTime == null,
-            'You should use either exists or updateTime, not both'),
-        assert(updateTime == null || updateTime.isUtc,
-            'updateTime should be in UTC format');
+            'You should use either exists or updateTime, not both');
 
-  factory Precondition.fromJson(Map<String, dynamic> json) {
-    final result = _$PreconditionFromJson(json);
-    assert(result.updateTime == null || result.updateTime.isUtc,
-        'updateTime should be in UTC format');
-    return result;
-  }
+  factory Precondition.fromJson(Map<String, dynamic> json) =>
+      _$PreconditionFromJson(json);
 
   Map<String, dynamic> toJson() => _$PreconditionToJson(this);
 }

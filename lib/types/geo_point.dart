@@ -12,7 +12,7 @@ class GeoPoint {
 
   Map<String, dynamic> toJson() => _$GeoPointToJson(this);
 
-  double distanceTo(GeoPoint point) => Util.calcDistance(this, point);
+  double distanceTo(GeoPoint point) => _Util.calcDistance(this, point);
 
   @override
   String toString() {
@@ -28,7 +28,7 @@ class GeoFirePoint {
   GeoFirePoint(this.geopoint, this.geohash);
 
   GeoFirePoint.fromGeoPoint(this.geopoint)
-      : geohash = Util.encode(
+      : geohash = _Util.encode(
           geopoint.latitude,
           geopoint.longitude,
           numberOfChars: 9,

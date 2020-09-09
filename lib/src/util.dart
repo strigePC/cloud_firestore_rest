@@ -1,6 +1,12 @@
 part of cloud_firestore_rest;
 
-class Util {
+class _Util {
+  static dateTimeToJson(DateTime dateTime) =>
+      dateTime?.toUtc()?.toIso8601String();
+
+  static dateTimeFromJson(String json) =>
+      json != null ? DateTime.parse(json) : null;
+
   /// Encode
   /// Create a geohash from latitude and longitude
   /// that is 'number of chars' long

@@ -5,6 +5,7 @@ part of cloud_firestore_rest;
 class TransactionOptions {
   /// The transaction can only be used for read operations.
   final ReadOnly readOnly;
+
   /// The transaction can be used for both read and write operations.
   final ReadWrite readWrite;
 
@@ -27,18 +28,15 @@ class ReadOnly {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime readTime;
 
   ReadOnly(this.readTime)
       : assert(readTime == null || readTime.isUtc,
             'readTime should be in UTC format');
 
-  factory ReadOnly.fromJson(Map<String, dynamic> json) {
-    final result = _$ReadOnlyFromJson(json);
-    assert(result.readTime == null || result.readTime.isUtc,
-        'readTime should be in UTC format');
-    return result;
-  }
+  factory ReadOnly.fromJson(Map<String, dynamic> json) =>
+      _$ReadOnlyFromJson(json);
 
   Map<String, dynamic> toJson() => _$ReadOnlyToJson(this);
 }

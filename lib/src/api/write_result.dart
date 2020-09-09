@@ -12,22 +12,17 @@ class WriteResult {
   /// A timestamp in RFC3339 UTC "Zulu" format, with nanosecond resolution and
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
+  @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
   final DateTime updateTime;
 
   /// The results of applying each [FieldTransform],
   /// in the same order.
   final List<Value> transformResults;
 
-  WriteResult(this.updateTime, this.transformResults)
-      : assert(updateTime == null || updateTime.isUtc,
-            'updateTime should be in UTC format');
+  WriteResult(this.updateTime, this.transformResults);
 
-  factory WriteResult.fromJson(Map<String, dynamic> json) {
-    final result = _$WriteResultFromJson(json);
-    assert(result.updateTime == null || result.updateTime.isUtc,
-        'updateTime should be in UTC format');
-    return result;
-  }
+  factory WriteResult.fromJson(Map<String, dynamic> json) =>
+      _$WriteResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$WriteResultToJson(this);
 }

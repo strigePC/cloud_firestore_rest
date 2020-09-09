@@ -13,7 +13,7 @@ class WriteBatch {
     await RestApi.batchWrite(
       projectId: _firestore.app.options.projectId,
       headers: headers,
-      writes: _writes,
+      writes: _writes.toList(),
     );
   }
 

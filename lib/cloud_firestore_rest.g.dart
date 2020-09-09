@@ -733,7 +733,7 @@ Value _$ValueFromJson(Map<String, dynamic> json) {
     timestampValue: json['timestampValue'] as String,
     integerValue: json['integerValue'] as String,
     doubleValue: (json['doubleValue'] as num)?.toDouble(),
-    nullValue: json['nullValue'] as bool,
+    nullValue: json['nullValue'],
     booleanValue: json['booleanValue'] as bool,
     stringValue: json['stringValue'] as String,
     referenceValue: json['referenceValue'] as String,
@@ -741,29 +741,6 @@ Value _$ValueFromJson(Map<String, dynamic> json) {
         ? null
         : GeoPoint.fromJson(json['geoPointValue'] as Map<String, dynamic>),
   );
-}
-
-Map<String, dynamic> _$ValueToJson(Value instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('nullValue', instance.nullValue);
-  writeNotNull('booleanValue', instance.booleanValue);
-  writeNotNull('integerValue', instance.integerValue);
-  writeNotNull('doubleValue', instance.doubleValue);
-  writeNotNull('timestampValue', instance.timestampValue);
-  writeNotNull('stringValue', instance.stringValue);
-  writeNotNull('bytesValue', instance.bytesValue);
-  writeNotNull('referenceValue', instance.referenceValue);
-  writeNotNull('geoPointValue', instance.geoPointValue?.toJson());
-  writeNotNull('arrayValue', instance.arrayValue?.toJson());
-  writeNotNull('mapValue', instance.mapValue?.toJson());
-  return val;
 }
 
 ArrayValue _$ArrayValueFromJson(Map<String, dynamic> json) {

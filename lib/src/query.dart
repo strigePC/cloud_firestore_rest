@@ -561,7 +561,7 @@ class Query {
               "when an inequality operator is invoked.");
         }
         assert(
-          filter.value.nullValue == null || !filter.value.nullValue,
+          !filter.value.isNull(),
           'Use isNull for checking if field is null',
         );
 

@@ -1,8 +1,8 @@
 part of cloud_firestore_rest;
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class Value {
-  final bool nullValue;
+  final dynamic nullValue;
   final bool booleanValue;
   final String integerValue;
   final double doubleValue;
@@ -28,21 +28,32 @@ class Value {
     this.geoPointValue,
   }) : assert(
           (mapValue != null) ^
-              (arrayValue != null) ^
-              (bytesValue != null) ^
-              (timestampValue != null) ^
-              (integerValue != null) ^
-              (doubleValue != null) ^
-              (nullValue != null) ^
-              (booleanValue != null) ^
-              (stringValue != null) ^
-              (referenceValue != null) ^
-              (geoPointValue != null),
+                  (arrayValue != null) ^
+                  (bytesValue != null) ^
+                  (timestampValue != null) ^
+                  (integerValue != null) ^
+                  (doubleValue != null) ^
+                  (nullValue != null) ^
+                  (booleanValue != null) ^
+                  (stringValue != null) ^
+                  (referenceValue != null) ^
+                  (geoPointValue != null) ||
+              (mapValue == null) &&
+                  (arrayValue == null) &&
+                  (bytesValue == null) &&
+                  (timestampValue == null) &&
+                  (integerValue == null) &&
+                  (doubleValue == null) &&
+                  (nullValue == null) &&
+                  (booleanValue == null) &&
+                  (stringValue == null) &&
+                  (referenceValue == null) &&
+                  (geoPointValue == null),
           'Only one of the values can be set for Value',
         );
 
   factory Value.fromValue(dynamic value) {
-    if (value == null) return Value(nullValue: true);
+    if (value == null) return Value(nullValue: null);
     if (value is String) return Value(stringValue: value);
     if (value is int) return Value(integerValue: value.toString());
     if (value is bool) return Value(booleanValue: value);
@@ -75,8 +86,21 @@ class Value {
         'CollectionReference');
   }
 
+  bool isNull() {
+    return nullValue == null &&
+        booleanValue == null &&
+        integerValue == null &&
+        doubleValue == null &&
+        timestampValue == null &&
+        stringValue == null &&
+        bytesValue == null &&
+        referenceValue == null &&
+        geoPointValue == null &&
+        arrayValue == null &&
+        mapValue == null;
+  }
+
   dynamic get decode {
-    if (nullValue != null) return null;
     if (stringValue != null) return stringValue;
     if (integerValue != null) return int.parse(integerValue);
     if (booleanValue != null) return booleanValue;
@@ -86,14 +110,34 @@ class Value {
     if (arrayValue != null) return arrayValue.decode;
     if (mapValue != null) return mapValue.decode;
     if (bytesValue != null) return base64Decode(bytesValue);
+    return null;
   }
 
-  factory Value.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('nullValue')) json['nullValue'] = true;
-    return _$ValueFromJson(json);
+  factory Value.fromJson(Map<String, dynamic> json) => _$ValueFromJson(json);
+
+  Map<String, dynamic> toJson() {
+    final val = <String, dynamic>{};
+
+    void writeNotNull(String key, dynamic value) {
+      if (value != null) {
+        val[key] = value;
+      }
+    }
+
+    writeNotNull('booleanValue', booleanValue);
+    writeNotNull('integerValue', integerValue);
+    writeNotNull('doubleValue', doubleValue);
+    writeNotNull('timestampValue', timestampValue);
+    writeNotNull('stringValue', stringValue);
+    writeNotNull('bytesValue', bytesValue);
+    writeNotNull('referenceValue', referenceValue);
+    writeNotNull('geoPointValue', geoPointValue?.toJson());
+    writeNotNull('arrayValue', arrayValue?.toJson());
+    writeNotNull('mapValue', mapValue?.toJson());
+    if (val.isEmpty) val['nullValue'] = null;
+    return val;
   }
 
-  Map<String, dynamic> toJson() => _$ValueToJson(this);
 
   @override
   String toString() {

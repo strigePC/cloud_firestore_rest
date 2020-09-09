@@ -69,7 +69,7 @@ class CollectionReference extends Query {
 
     return DocumentReference._(
       _firestore,
-      _components.followedBy(path.split('/')),
+      _components.followedBy(path.split('/')).toList(),
     );
   }
 

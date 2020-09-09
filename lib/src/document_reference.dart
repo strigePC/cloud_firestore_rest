@@ -111,7 +111,7 @@ class DocumentReference {
     DocumentMask mask;
     if (options != null) {
       if (options.merge != null && options.merge) {
-        mask = DocumentMask(data.keys);
+        mask = DocumentMask(data.keys.toList());
       } else if (options.mergeFields != null) {
         mask = DocumentMask(options.mergeFields);
       }
@@ -145,7 +145,7 @@ class DocumentReference {
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
-      updateMask: DocumentMask(data.keys),
+      updateMask: DocumentMask(data.keys.toList()),
       currentDocument: Precondition(exists: true),
     );
   }

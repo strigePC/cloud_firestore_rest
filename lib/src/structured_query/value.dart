@@ -116,7 +116,8 @@ class ArrayValue {
     return ArrayValue(values);
   }
 
-  List<dynamic> get decode => values.map((value) => value.decode).toList();
+  List<dynamic> get decode =>
+      (values ?? []).map((value) => value.decode).toList();
 
   factory ArrayValue.fromJson(Map<String, dynamic> json) =>
       _$ArrayValueFromJson(json);
@@ -145,7 +146,7 @@ class MapValue {
   }
 
   Map<String, dynamic> get decode =>
-      fields.map((key, value) => MapEntry(key, value.decode));
+      (fields ?? {}).map((key, value) => MapEntry(key, value.decode));
 
   factory MapValue.fromJson(Map<String, dynamic> json) =>
       _$MapValueFromJson(json);

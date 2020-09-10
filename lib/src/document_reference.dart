@@ -43,7 +43,7 @@ class DocumentReference {
   /// Deletes the current document from the collection.
   Future<void> delete({Map<String, String> headers}) async {
     await RestApi.delete(
-      components.join('/'),
+      path,
       projectId: _firestore.app.options.projectId,
       headers: headers,
     );
@@ -66,7 +66,7 @@ class DocumentReference {
       if (_fields != null && _fields.isNotEmpty) mask = DocumentMask(_fields);
 
       final res = await RestApi.get(
-        components.join('/'),
+        path,
         headers: headers,
         projectId: _firestore.app.options.projectId,
         mask: mask,
@@ -118,7 +118,7 @@ class DocumentReference {
     }
 
     await RestApi.patch(
-      components.join('/'),
+      path,
       headers: headers,
       projectId: _firestore.app.options.projectId,
       body: Document(
@@ -139,7 +139,7 @@ class DocumentReference {
     assert(data != null);
 
     await RestApi.patch(
-      components.join('/'),
+      path,
       headers: headers,
       projectId: _firestore.app.options.projectId,
       body: Document(

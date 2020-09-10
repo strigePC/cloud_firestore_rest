@@ -35,7 +35,7 @@ class CollectionReference extends Query {
   }) async {
     assert(data != null);
     final res = await RestApi.createDocument(
-      _components.join('/'),
+      path,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),

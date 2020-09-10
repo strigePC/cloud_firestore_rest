@@ -26,7 +26,7 @@ class WriteBatch {
     _writes.add(Write(
       delete: 'projects/${_firestore.app.options.projectId}'
           '/databases/(default)'
-          '/documents/${document.id}',
+          '/documents/${document.path}',
     ));
   }
 
@@ -60,7 +60,7 @@ class WriteBatch {
       update: Document(
         name: 'projects/${_firestore.app.options.projectId}'
             '/databases/(default)'
-            '/documents/${document.id}',
+            '/documents/${document.path}',
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
       updateMask: mask,
@@ -80,7 +80,7 @@ class WriteBatch {
       update: Document(
         name: 'projects/${_firestore.app.options.projectId}'
             '/databases/(default)'
-            '/documents/${document.id}',
+            '/documents/${document.path}',
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
       updateMask: DocumentMask(data.keys),

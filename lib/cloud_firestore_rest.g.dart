@@ -34,6 +34,31 @@ Map<String, dynamic> _$BatchWriteResponseToJson(BatchWriteResponse instance) {
   return val;
 }
 
+CommitResponse _$CommitResponseFromJson(Map<String, dynamic> json) {
+  return CommitResponse(
+    (json['writeResults'] as List)
+        ?.map((e) =>
+            e == null ? null : WriteResult.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    json['commitTime'] as String,
+  );
+}
+
+Map<String, dynamic> _$CommitResponseToJson(CommitResponse instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull(
+      'writeResults', instance.writeResults?.map((e) => e?.toJson())?.toList());
+  writeNotNull('commitTime', instance.commitTime);
+  return val;
+}
+
 DocumentMask _$DocumentMaskFromJson(Map<String, dynamic> json) {
   return DocumentMask(
     (json['fieldPaths'] as List)?.map((e) => e as String)?.toList(),

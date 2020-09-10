@@ -12,6 +12,7 @@ import 'package:quiver/core.dart';
 part 'cloud_firestore_rest.g.dart';
 part 'src/api/api.dart';
 part 'src/api/batch_write_response.dart';
+part 'src/api/commit_response.dart';
 part 'src/api/document_mask.dart';
 part 'src/api/document_transform.dart';
 part 'src/api/field_transform.dart';

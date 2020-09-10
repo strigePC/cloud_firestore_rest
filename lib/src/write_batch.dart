@@ -10,7 +10,7 @@ class WriteBatch {
   ///
   /// Calling this method prevents any future operations from being added.
   Future<void> commit({Map<String, String> headers}) async {
-    await RestApi.batchWrite(
+    await RestApi.commit(
       projectId: _firestore.app.options.projectId,
       headers: headers,
       writes: _writes.toList(),

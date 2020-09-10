@@ -56,13 +56,57 @@ class RestApi {
 
     if (json['error'] != null) {
       throw FirebaseException(
-        plugin: 'RestAPI.createDocument',
+        plugin: 'RestAPI.batchWrite',
         code: json['error']['code'].toString(),
         message: json['error']['message'],
       );
     }
 
     return BatchWriteResponse.fromJson(json);
+  }
+
+  /// Commits a transaction, while optionally updating documents.
+  /// HTTP request
+  /// POST https://firestore.googleapis.com/v1/{database=projects/*/databases/*}/documents:commit
+  static Future<CommitResponse> commit({
+    String projectId,
+    String databaseId = '(default)',
+    List<Write> writes,
+    Uint64List transaction,
+    Map<String, String> headers,
+  }) async {
+    assert(databaseId != null);
+    if (projectId == null) projectId = Firebase.app().options.projectId;
+
+    final path = 'projects/$projectId/databases/$databaseId/documents';
+    _assertPathFormat(path);
+
+    final url = StringBuffer(_baseUrl)
+      ..write('/')
+      ..write(path)
+      ..write(':commit');
+    final body = <String, dynamic>{'writes': writes};
+
+    if (transaction != null) {
+      body['transaction'] = base64Encode(transaction);
+    }
+
+    final res = await http.post(
+      url.toString(),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    final json = jsonDecode(res.body);
+
+    if (json['error'] != null) {
+      throw FirebaseException(
+        plugin: 'RestAPI.commit',
+        code: json['error']['code'].toString(),
+        message: json['error']['message'],
+      );
+    }
+
+    return CommitResponse.fromJson(json);
   }
 
   /// Creates a new document.

@@ -479,7 +479,7 @@ class Query {
     void addUnaryFilter(String field, UnaryOperator operator) {
       final filter = UnaryFilter(FieldReference(field), operator);
 
-      assert(filters.where((f) => f != filter).isEmpty,
+      assert(filters.where((f) => f == filter).isEmpty,
           'Condition $filter already exists in this query.');
       filters.add(filter);
     }

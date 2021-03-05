@@ -61,7 +61,7 @@ class ListRequestCard extends StatelessWidget {
                 try {
                   await RestApi.delete(doc.name.split('/').last);
                 } on FirebaseException catch (e) {
-                  Scaffold.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       behavior: SnackBarBehavior.floating,
                       content: Text(e.message),

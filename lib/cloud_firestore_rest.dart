@@ -45,4 +45,6 @@ part 'src/util.dart';
 part 'src/write_batch.dart';
 part 'types/geo_point.dart';
 
-const _baseUrl = 'https://firestore.googleapis.com/v1';
+const _baseUrl = 'firestore.googleapis.com';
+
+const _apiVersion = '/v1';

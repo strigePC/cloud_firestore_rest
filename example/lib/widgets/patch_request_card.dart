@@ -61,7 +61,7 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
         updatedDocument = result;
       });
     } on FirebaseException catch (e) {
-      Scaffold.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
           content: Text(e.message),

@@ -41,17 +41,10 @@ class RestApi {
     final path = 'projects/$projectId/databases/$databaseId/documents';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)
-      ..write('/')
-      ..write(path)
-      ..write(':batchWrite');
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path:batchWrite');
     final body = <String, dynamic>{'writes': writes, 'labels': labels};
 
-    final res = await http.post(
-      url.toString(),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final res = await http.post(uri, headers: headers, body: jsonEncode(body));
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -80,22 +73,14 @@ class RestApi {
 
     final path = 'projects/$projectId/databases/$databaseId/documents';
     _assertPathFormat(path);
-
-    final url = StringBuffer(_baseUrl)
-      ..write('/')
-      ..write(path)
-      ..write(':commit');
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path:commit');
     final body = <String, dynamic>{'writes': writes};
 
     if (transaction != null) {
       body['transaction'] = base64Encode(transaction);
     }
 
-    final res = await http.post(
-      url.toString(),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final res = await http.post(uri, headers: headers, body: jsonEncode(body));
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -128,7 +113,7 @@ class RestApi {
         'projects/$projectId/databases/$databaseId/documents/$collectionId';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path');
 
     final queryParameters = <String>[];
 
@@ -138,11 +123,7 @@ class RestApi {
           mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
     }
 
-    final res = await http.post(
-      url.toString(),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final res = await http.post(uri, headers: headers, body: jsonEncode(body));
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -173,18 +154,19 @@ class RestApi {
         'projects/$projectId/databases/$databaseId/documents/$documentPath';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
+    final queryParameters = <String, dynamic>{};
 
     if (currentDocument != null) {
       if (currentDocument.exists != null) {
-        url.write('?currentDocument.exists=${currentDocument.exists}');
+        queryParameters['currentDocument.exists'] = currentDocument.exists;
       } else if (currentDocument.updateTime != null) {
-        url.write(
-            '?currentDocument.updateTime=${currentDocument.updateTime.toUtc().toIso8601String()}');
+        queryParameters['currentDocument.updateTime'] =
+            currentDocument.updateTime.toUtc().toIso8601String();
       }
     }
 
-    final res = await http.delete(url.toString(), headers: headers);
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path', queryParameters);
+    final res = await http.delete(uri, headers: headers);
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -217,29 +199,20 @@ class RestApi {
         'projects/$projectId/databases/$databaseId/documents/$documentPath';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
-    final queryParameters = <String>[];
+    final queryParameters = <String, dynamic>{};
 
     // Handling query parameters
-    if (mask != null) {
-      queryParameters.addAll(
-          mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
-    }
+    if (mask != null) queryParameters['mask.fieldPaths'] = mask.fieldPaths;
+
     if (transaction != null) {
-      queryParameters.add('transaction=${base64Encode(transaction)}');
+      queryParameters['transaction'] = base64Encode(transaction);
     }
     if (readTime != null) {
-      queryParameters.add('readTime=${readTime.toUtc().toIso8601String()}');
+      queryParameters['readTime'] = readTime.toUtc().toIso8601String();
     }
 
-    // Appending query parameters to URL
-    if (queryParameters.isNotEmpty) {
-      url
-        ..write('?')
-        ..writeAll(queryParameters, '&');
-    }
-
-    final res = await http.get(url.toString(), headers: headers);
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path', queryParameters);
+    final res = await http.get(uri, headers: headers);
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -278,34 +251,23 @@ class RestApi {
         'projects/$projectId/databases/$databaseId/documents/$collectionId';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
-
     // Handling query parameters
-    final queryParameters = <String>[];
+    final queryParameters = <String, dynamic>{};
 
-    if (pageSize != null) queryParameters.add('pageSize=$pageSize');
-    if (pageToken != null) queryParameters.add('pageToken=$pageToken');
-    if (orderBy != null) queryParameters.add('orderBy=$orderBy');
-    if (mask != null) {
-      queryParameters.addAll(
-          mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
-    }
-    if (showMissing != null) queryParameters.add('showMissing=$showMissing');
+    if (pageSize != null) queryParameters['pageSize'] = pageSize;
+    if (pageToken != null) queryParameters['pageToken'] = pageToken;
+    if (orderBy != null) queryParameters['orderBy'] = orderBy;
+    if (mask != null) queryParameters['mask.fieldPaths'] = mask.fieldPaths;
+    if (showMissing != null) queryParameters['showMissing'] = showMissing;
     if (transaction != null) {
-      queryParameters.add('transaction=${base64Encode(transaction)}');
+      queryParameters['transaction'] = base64Encode(transaction);
     }
     if (readTime != null) {
-      queryParameters.add('readTime=${readTime.toUtc().toIso8601String()}');
+      queryParameters['readTime'] = readTime.toUtc().toIso8601String();
     }
 
-    // Appending query parameters to URL
-    if (queryParameters.isNotEmpty) {
-      url
-        ..write('?')
-        ..writeAll(queryParameters, '&');
-    }
-
-    final res = await http.get(url.toString(), headers: headers);
+    final uri = Uri.https(_baseUrl, '/$_apiVersion/$path', queryParameters);
+    final res = await http.get(uri, headers: headers);
     final json = jsonDecode(res.body);
 
     if (json is List && json.isNotEmpty && json[0]['error'] != null) {
@@ -339,40 +301,26 @@ class RestApi {
         'projects/$projectId/databases/$databaseId/documents/$documentPath';
     _assertPathFormat(path);
 
-    final url = StringBuffer(_baseUrl)..write('/')..write(path);
-
     // Handling query parameters
-    final queryParameters = <String>[];
+    final queryParameters = <String, dynamic>{};
 
     if (updateMask != null) {
-      queryParameters.addAll(updateMask.fieldPaths
-          .map((fieldPath) => 'updateMask.fieldPaths=$fieldPath'));
+      queryParameters['updateMask.fieldPaths'] = updateMask.fieldPaths;
     }
-    if (mask != null) {
-      queryParameters.addAll(
-          mask.fieldPaths.map((fieldPath) => 'mask.fieldPaths=$fieldPath'));
-    }
+
+    if (mask != null) queryParameters['mask.fieldPaths'] = mask.fieldPaths;
+
     if (currentDocument != null) {
       if (currentDocument.exists != null) {
-        queryParameters.add('currentDocument.exists=${currentDocument.exists}');
+        queryParameters['currentDocument.exists'] = currentDocument.exists;
       } else if (currentDocument.updateTime != null) {
-        queryParameters.add(
-            'currentDocument.updateTime=${currentDocument.updateTime.toUtc().toIso8601String()}');
+        queryParameters['currentDocument.updateTime'] =
+            currentDocument.updateTime.toUtc().toIso8601String();
       }
     }
 
-    // Appending query parameters to URL
-    if (queryParameters.isNotEmpty) {
-      url
-        ..write('?')
-        ..writeAll(queryParameters, '&');
-    }
-
-    final res = await http.patch(
-      url.toString(),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path', queryParameters);
+    final res = await http.patch(uri, headers: headers, body: jsonEncode(body));
     final json = jsonDecode(res.body);
 
     if (json['error'] != null) {
@@ -415,11 +363,6 @@ class RestApi {
     }
     _assertPathFormat(path.toString());
 
-    final url = StringBuffer(_baseUrl)
-      ..write('/')
-      ..write(path)
-      ..write(':runQuery');
-
     final body = <String, dynamic>{'structuredQuery': structuredQuery};
     if (transaction != null) {
       body['transaction'] = base64Encode(transaction);
@@ -429,11 +372,8 @@ class RestApi {
       body['readTime'] = readTime.toUtc().toIso8601String();
     }
 
-    final res = await http.post(
-      url.toString(),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final uri = Uri.https(_baseUrl, '$_apiVersion/$path:runQuery');
+    final res = await http.post(uri, headers: headers, body: jsonEncode(body));
     final json = jsonDecode(res.body);
 
     if (json is List && json.isNotEmpty && json[0]['error'] != null) {

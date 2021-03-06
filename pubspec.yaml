@@ -15,7 +15,7 @@ dependencies:
   firebase_core: ^1.0.0
 
   json_annotation: ^4.0.0
-  quiver: ">=2.0.0 <3.0.0"
+  quiver: ^3.0.0
 
 dev_dependencies:
   flutter_test:

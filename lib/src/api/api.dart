@@ -153,7 +153,8 @@ class RestApi {
 
     if (currentDocument != null) {
       if (currentDocument.exists != null) {
-        queryParameters['currentDocument.exists'] = currentDocument.exists;
+        queryParameters['currentDocument.exists'] =
+            currentDocument.exists.toString();
       } else if (currentDocument.updateTime != null) {
         queryParameters['currentDocument.updateTime'] =
             currentDocument.updateTime!.toUtc().toIso8601String();
@@ -304,7 +305,8 @@ class RestApi {
 
     if (currentDocument != null) {
       if (currentDocument.exists != null) {
-        queryParameters['currentDocument.exists'] = currentDocument.exists;
+        queryParameters['currentDocument.exists'] =
+            currentDocument.exists.toString();
       } else if (currentDocument.updateTime != null) {
         queryParameters['currentDocument.updateTime'] =
             currentDocument.updateTime!.toUtc().toIso8601String();

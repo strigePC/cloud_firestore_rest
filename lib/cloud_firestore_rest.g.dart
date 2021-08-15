@@ -8,14 +8,12 @@ part of cloud_firestore_rest;
 
 BatchWriteResponse _$BatchWriteResponseFromJson(Map<String, dynamic> json) {
   return BatchWriteResponse(
-    (json['writeResults'] as List)
-        ?.map((e) =>
-            e == null ? null : WriteResult.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    (json['status'] as List)
-        ?.map((e) =>
-            e == null ? null : Status.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['writeResults'] as List<dynamic>?)
+        ?.map((e) => WriteResult.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    (json['status'] as List<dynamic>?)
+        ?.map((e) => Status.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -29,18 +27,17 @@ Map<String, dynamic> _$BatchWriteResponseToJson(BatchWriteResponse instance) {
   }
 
   writeNotNull(
-      'writeResults', instance.writeResults?.map((e) => e?.toJson())?.toList());
-  writeNotNull('status', instance.status?.map((e) => e?.toJson())?.toList());
+      'writeResults', instance.writeResults?.map((e) => e.toJson()).toList());
+  writeNotNull('status', instance.status?.map((e) => e.toJson()).toList());
   return val;
 }
 
 CommitResponse _$CommitResponseFromJson(Map<String, dynamic> json) {
   return CommitResponse(
-    (json['writeResults'] as List)
-        ?.map((e) =>
-            e == null ? null : WriteResult.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    json['commitTime'] as String,
+    (json['writeResults'] as List<dynamic>?)
+        ?.map((e) => WriteResult.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    json['commitTime'] as String?,
   );
 }
 
@@ -54,55 +51,37 @@ Map<String, dynamic> _$CommitResponseToJson(CommitResponse instance) {
   }
 
   writeNotNull(
-      'writeResults', instance.writeResults?.map((e) => e?.toJson())?.toList());
+      'writeResults', instance.writeResults?.map((e) => e.toJson()).toList());
   writeNotNull('commitTime', instance.commitTime);
   return val;
 }
 
 DocumentMask _$DocumentMaskFromJson(Map<String, dynamic> json) {
   return DocumentMask(
-    (json['fieldPaths'] as List)?.map((e) => e as String)?.toList(),
+    (json['fieldPaths'] as List<dynamic>).map((e) => e as String).toList(),
   );
 }
 
-Map<String, dynamic> _$DocumentMaskToJson(DocumentMask instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('fieldPaths', instance.fieldPaths);
-  return val;
-}
+Map<String, dynamic> _$DocumentMaskToJson(DocumentMask instance) =>
+    <String, dynamic>{
+      'fieldPaths': instance.fieldPaths,
+    };
 
 DocumentTransform _$DocumentTransformFromJson(Map<String, dynamic> json) {
   return DocumentTransform(
     json['document'] as String,
-    (json['fieldTransforms'] as List)
-        ?.map((e) => e == null
-            ? null
-            : FieldTransform.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['fieldTransforms'] as List<dynamic>)
+        .map((e) => FieldTransform.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
-Map<String, dynamic> _$DocumentTransformToJson(DocumentTransform instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('document', instance.document);
-  writeNotNull('fieldTransforms',
-      instance.fieldTransforms?.map((e) => e?.toJson())?.toList());
-  return val;
-}
+Map<String, dynamic> _$DocumentTransformToJson(DocumentTransform instance) =>
+    <String, dynamic>{
+      'document': instance.document,
+      'fieldTransforms':
+          instance.fieldTransforms.map((e) => e.toJson()).toList(),
+    };
 
 FieldTransform _$FieldTransformFromJson(Map<String, dynamic> json) {
   return FieldTransform(
@@ -129,7 +108,9 @@ FieldTransform _$FieldTransformFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$FieldTransformToJson(FieldTransform instance) {
-  final val = <String, dynamic>{};
+  final val = <String, dynamic>{
+    'fieldPath': instance.fieldPath,
+  };
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -137,7 +118,6 @@ Map<String, dynamic> _$FieldTransformToJson(FieldTransform instance) {
     }
   }
 
-  writeNotNull('fieldPath', instance.fieldPath);
   writeNotNull(
       'setToServerValue', _$ServerValueEnumMap[instance.setToServerValue]);
   writeNotNull('increment', instance.increment?.toJson());
@@ -149,36 +129,41 @@ Map<String, dynamic> _$FieldTransformToJson(FieldTransform instance) {
   return val;
 }
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
   dynamic source, {
-  T unknownValue,
+  K? unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$ServerValueEnumMap = {
@@ -189,11 +174,10 @@ const _$ServerValueEnumMap = {
 ListDocumentsResponse _$ListDocumentsResponseFromJson(
     Map<String, dynamic> json) {
   return ListDocumentsResponse(
-    (json['documents'] as List)
-        ?.map((e) =>
-            e == null ? null : Document.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    json['nextPageToken'] as String,
+    (json['documents'] as List<dynamic>?)
+        ?.map((e) => Document.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    json['nextPageToken'] as String?,
   );
 }
 
@@ -208,15 +192,15 @@ Map<String, dynamic> _$ListDocumentsResponseToJson(
   }
 
   writeNotNull(
-      'documents', instance.documents?.map((e) => e?.toJson())?.toList());
+      'documents', instance.documents?.map((e) => e.toJson()).toList());
   writeNotNull('nextPageToken', instance.nextPageToken);
   return val;
 }
 
 Precondition _$PreconditionFromJson(Map<String, dynamic> json) {
   return Precondition(
-    exists: json['exists'] as bool,
-    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String),
+    exists: json['exists'] as bool?,
+    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String?),
   );
 }
 
@@ -236,12 +220,12 @@ Map<String, dynamic> _$PreconditionToJson(Precondition instance) {
 
 RunQueryResponse _$RunQueryResponseFromJson(Map<String, dynamic> json) {
   return RunQueryResponse(
-    json['transaction'] as String,
+    json['transaction'] as String?,
     json['document'] == null
         ? null
         : Document.fromJson(json['document'] as Map<String, dynamic>),
-    _Util.dateTimeFromJson(json['readTime'] as String),
-    json['skippedResults'] as int,
+    _Util.dateTimeFromJson(json['readTime'] as String?),
+    json['skippedResults'] as int?,
   );
 }
 
@@ -263,9 +247,11 @@ Map<String, dynamic> _$RunQueryResponseToJson(RunQueryResponse instance) {
 
 Status _$StatusFromJson(Map<String, dynamic> json) {
   return Status(
-    json['code'] as int,
-    json['message'] as String,
-    (json['details'] as List)?.map((e) => e as Map<String, dynamic>)?.toList(),
+    json['code'] as int?,
+    json['message'] as String?,
+    (json['details'] as List<dynamic>?)
+        ?.map((e) => e as Map<String, dynamic>)
+        .toList(),
   );
 }
 
@@ -311,7 +297,7 @@ Map<String, dynamic> _$TransactionOptionsToJson(TransactionOptions instance) {
 
 ReadOnly _$ReadOnlyFromJson(Map<String, dynamic> json) {
   return ReadOnly(
-    _Util.dateTimeFromJson(json['readTime'] as String),
+    _Util.dateTimeFromJson(json['readTime'] as String?),
   );
 }
 
@@ -330,7 +316,7 @@ Map<String, dynamic> _$ReadOnlyToJson(ReadOnly instance) {
 
 ReadWrite _$ReadWriteFromJson(Map<String, dynamic> json) {
   return ReadWrite(
-    retryTransaction: json['retryTransaction'] as String,
+    retryTransaction: json['retryTransaction'] as String?,
   );
 }
 
@@ -352,11 +338,9 @@ Write _$WriteFromJson(Map<String, dynamic> json) {
     updateMask: json['updateMask'] == null
         ? null
         : DocumentMask.fromJson(json['updateMask'] as Map<String, dynamic>),
-    updateTransforms: (json['updateTransforms'] as List)
-        ?.map((e) => e == null
-            ? null
-            : FieldTransform.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    updateTransforms: (json['updateTransforms'] as List<dynamic>?)
+        ?.map((e) => FieldTransform.fromJson(e as Map<String, dynamic>))
+        .toList(),
     currentDocument: json['currentDocument'] == null
         ? null
         : Precondition.fromJson(
@@ -364,7 +348,7 @@ Write _$WriteFromJson(Map<String, dynamic> json) {
     update: json['update'] == null
         ? null
         : Document.fromJson(json['update'] as Map<String, dynamic>),
-    delete: json['delete'] as String,
+    delete: json['delete'] as String?,
     transform: json['transform'] == null
         ? null
         : DocumentTransform.fromJson(json['transform'] as Map<String, dynamic>),
@@ -382,7 +366,7 @@ Map<String, dynamic> _$WriteToJson(Write instance) {
 
   writeNotNull('updateMask', instance.updateMask?.toJson());
   writeNotNull('updateTransforms',
-      instance.updateTransforms?.map((e) => e?.toJson())?.toList());
+      instance.updateTransforms?.map((e) => e.toJson()).toList());
   writeNotNull('currentDocument', instance.currentDocument?.toJson());
   writeNotNull('update', instance.update?.toJson());
   writeNotNull('delete', instance.delete);
@@ -392,11 +376,10 @@ Map<String, dynamic> _$WriteToJson(Write instance) {
 
 WriteResult _$WriteResultFromJson(Map<String, dynamic> json) {
   return WriteResult(
-    _Util.dateTimeFromJson(json['updateTime'] as String),
-    (json['transformResults'] as List)
-        ?.map(
-            (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    _Util.dateTimeFromJson(json['updateTime'] as String?),
+    (json['transformResults'] as List<dynamic>?)
+        ?.map((e) => Value.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -411,19 +394,18 @@ Map<String, dynamic> _$WriteResultToJson(WriteResult instance) {
 
   writeNotNull('updateTime', _Util.dateTimeToJson(instance.updateTime));
   writeNotNull('transformResults',
-      instance.transformResults?.map((e) => e?.toJson())?.toList());
+      instance.transformResults?.map((e) => e.toJson()).toList());
   return val;
 }
 
 Document _$DocumentFromJson(Map<String, dynamic> json) {
   return Document(
-    name: json['name'] as String,
-    fields: (json['fields'] as Map<String, dynamic>)?.map(
-      (k, e) => MapEntry(
-          k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
+    name: json['name'] as String?,
+    fields: (json['fields'] as Map<String, dynamic>?)?.map(
+      (k, e) => MapEntry(k, Value.fromJson(e as Map<String, dynamic>)),
     ),
-    createTime: _Util.dateTimeFromJson(json['createTime'] as String),
-    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String),
+    createTime: _Util.dateTimeFromJson(json['createTime'] as String?),
+    updateTime: _Util.dateTimeFromJson(json['updateTime'] as String?),
   );
 }
 
@@ -438,7 +420,7 @@ Map<String, dynamic> _$DocumentToJson(Document instance) {
 
   writeNotNull('name', instance.name);
   writeNotNull(
-      'fields', instance.fields?.map((k, e) => MapEntry(k, e?.toJson())));
+      'fields', instance.fields?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('createTime', _Util.dateTimeToJson(instance.createTime));
   writeNotNull('updateTime', _Util.dateTimeToJson(instance.updateTime));
   return val;
@@ -446,8 +428,8 @@ Map<String, dynamic> _$DocumentToJson(Document instance) {
 
 CollectionSelector _$CollectionSelectorFromJson(Map<String, dynamic> json) {
   return CollectionSelector(
-    json['collectionId'] as String,
-    allDescendants: json['allDescendants'] as bool,
+    json['collectionId'] as String?,
+    allDescendants: json['allDescendants'] as bool?,
   );
 }
 
@@ -467,27 +449,17 @@ Map<String, dynamic> _$CollectionSelectorToJson(CollectionSelector instance) {
 
 Cursor _$CursorFromJson(Map<String, dynamic> json) {
   return Cursor(
-    (json['values'] as List)
-        ?.map(
-            (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['values'] as List<dynamic>)
+        .map((e) => Value.fromJson(e as Map<String, dynamic>))
+        .toList(),
     json['before'] as bool,
   );
 }
 
-Map<String, dynamic> _$CursorToJson(Cursor instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('values', instance.values?.map((e) => e?.toJson())?.toList());
-  writeNotNull('before', instance.before);
-  return val;
-}
+Map<String, dynamic> _$CursorToJson(Cursor instance) => <String, dynamic>{
+      'values': instance.values.map((e) => e.toJson()).toList(),
+      'before': instance.before,
+    };
 
 FieldReference _$FieldReferenceFromJson(Map<String, dynamic> json) {
   return FieldReference(
@@ -495,18 +467,10 @@ FieldReference _$FieldReferenceFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$FieldReferenceToJson(FieldReference instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('fieldPath', instance.fieldPath);
-  return val;
-}
+Map<String, dynamic> _$FieldReferenceToJson(FieldReference instance) =>
+    <String, dynamic>{
+      'fieldPath': instance.fieldPath,
+    };
 
 Filter _$FilterFromJson(Map<String, dynamic> json) {
   return Filter(
@@ -540,27 +504,18 @@ Map<String, dynamic> _$FilterToJson(Filter instance) {
 
 CompositeFilter _$CompositeFilterFromJson(Map<String, dynamic> json) {
   return CompositeFilter(
-    _$enumDecodeNullable(_$CompositeOperatorEnumMap, json['op']),
-    (json['filters'] as List)
-        ?.map((e) =>
-            e == null ? null : Filter.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    _$enumDecode(_$CompositeOperatorEnumMap, json['op']),
+    (json['filters'] as List<dynamic>)
+        .map((e) => Filter.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
-Map<String, dynamic> _$CompositeFilterToJson(CompositeFilter instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('op', _$CompositeOperatorEnumMap[instance.op]);
-  writeNotNull('filters', instance.filters?.map((e) => e?.toJson())?.toList());
-  return val;
-}
+Map<String, dynamic> _$CompositeFilterToJson(CompositeFilter instance) =>
+    <String, dynamic>{
+      'op': _$CompositeOperatorEnumMap[instance.op],
+      'filters': instance.filters.map((e) => e.toJson()).toList(),
+    };
 
 const _$CompositeOperatorEnumMap = {
   CompositeOperator.operatorUnspecified: 'OPERATOR_UNSPECIFIED',
@@ -569,30 +524,18 @@ const _$CompositeOperatorEnumMap = {
 
 FieldFilter _$FieldFilterFromJson(Map<String, dynamic> json) {
   return FieldFilter(
-    json['field'] == null
-        ? null
-        : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
-    _$enumDecodeNullable(_$FieldOperatorEnumMap, json['op']),
-    json['value'] == null
-        ? null
-        : Value.fromJson(json['value'] as Map<String, dynamic>),
+    FieldReference.fromJson(json['field'] as Map<String, dynamic>),
+    _$enumDecode(_$FieldOperatorEnumMap, json['op']),
+    Value.fromJson(json['value'] as Map<String, dynamic>),
   );
 }
 
-Map<String, dynamic> _$FieldFilterToJson(FieldFilter instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('field', instance.field?.toJson());
-  writeNotNull('op', _$FieldOperatorEnumMap[instance.op]);
-  writeNotNull('value', instance.value?.toJson());
-  return val;
-}
+Map<String, dynamic> _$FieldFilterToJson(FieldFilter instance) =>
+    <String, dynamic>{
+      'field': instance.field.toJson(),
+      'op': _$FieldOperatorEnumMap[instance.op],
+      'value': instance.value.toJson(),
+    };
 
 const _$FieldOperatorEnumMap = {
   FieldOperator.operatorUnspecified: 'OPERATOR_UNSPECIFIED',
@@ -637,26 +580,15 @@ const _$UnaryOperatorEnumMap = {
 
 Order _$OrderFromJson(Map<String, dynamic> json) {
   return Order(
-    json['field'] == null
-        ? null
-        : FieldReference.fromJson(json['field'] as Map<String, dynamic>),
-    direction: _$enumDecodeNullable(_$DirectionEnumMap, json['direction']),
+    FieldReference.fromJson(json['field'] as Map<String, dynamic>),
+    direction: _$enumDecode(_$DirectionEnumMap, json['direction']),
   );
 }
 
-Map<String, dynamic> _$OrderToJson(Order instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('field', instance.field?.toJson());
-  writeNotNull('direction', _$DirectionEnumMap[instance.direction]);
-  return val;
-}
+Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
+      'field': instance.field.toJson(),
+      'direction': _$DirectionEnumMap[instance.direction],
+    };
 
 const _$DirectionEnumMap = {
   Direction.directionUnspecified: 'DIRECTION_UNSPECIFIED',
@@ -666,11 +598,9 @@ const _$DirectionEnumMap = {
 
 Projection _$ProjectionFromJson(Map<String, dynamic> json) {
   return Projection(
-    (json['fields'] as List)
-        ?.map((e) => e == null
-            ? null
-            : FieldReference.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['fields'] as List<dynamic>?)
+        ?.map((e) => FieldReference.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -683,7 +613,7 @@ Map<String, dynamic> _$ProjectionToJson(Projection instance) {
     }
   }
 
-  writeNotNull('fields', instance.fields?.map((e) => e?.toJson())?.toList());
+  writeNotNull('fields', instance.fields?.map((e) => e.toJson()).toList());
   return val;
 }
 
@@ -692,26 +622,23 @@ StructuredQuery _$StructuredQueryFromJson(Map<String, dynamic> json) {
     ..select = json['select'] == null
         ? null
         : Projection.fromJson(json['select'] as Map<String, dynamic>)
-    ..from = (json['from'] as List)
-        ?.map((e) => e == null
-            ? null
-            : CollectionSelector.fromJson(e as Map<String, dynamic>))
-        ?.toList()
+    ..from = (json['from'] as List<dynamic>?)
+        ?.map((e) => CollectionSelector.fromJson(e as Map<String, dynamic>))
+        .toList()
     ..where = json['where'] == null
         ? null
         : Filter.fromJson(json['where'] as Map<String, dynamic>)
-    ..orderBy = (json['orderBy'] as List)
-        ?.map(
-            (e) => e == null ? null : Order.fromJson(e as Map<String, dynamic>))
-        ?.toList()
+    ..orderBy = (json['orderBy'] as List<dynamic>?)
+        ?.map((e) => Order.fromJson(e as Map<String, dynamic>))
+        .toList()
     ..startAt = json['startAt'] == null
         ? null
         : Cursor.fromJson(json['startAt'] as Map<String, dynamic>)
     ..endAt = json['endAt'] == null
         ? null
         : Cursor.fromJson(json['endAt'] as Map<String, dynamic>)
-    ..offset = json['offset'] as int
-    ..limit = json['limit'] as int;
+    ..offset = json['offset'] as int?
+    ..limit = json['limit'] as int?;
 }
 
 Map<String, dynamic> _$StructuredQueryToJson(StructuredQuery instance) {
@@ -724,9 +651,9 @@ Map<String, dynamic> _$StructuredQueryToJson(StructuredQuery instance) {
   }
 
   writeNotNull('select', instance.select?.toJson());
-  writeNotNull('from', instance.from?.map((e) => e?.toJson())?.toList());
+  writeNotNull('from', instance.from?.map((e) => e.toJson()).toList());
   writeNotNull('where', instance.where?.toJson());
-  writeNotNull('orderBy', instance.orderBy?.map((e) => e?.toJson())?.toList());
+  writeNotNull('orderBy', instance.orderBy?.map((e) => e.toJson()).toList());
   writeNotNull('startAt', instance.startAt?.toJson());
   writeNotNull('endAt', instance.endAt?.toJson());
   writeNotNull('offset', instance.offset);
@@ -742,14 +669,14 @@ Value _$ValueFromJson(Map<String, dynamic> json) {
     arrayValue: json['arrayValue'] == null
         ? null
         : ArrayValue.fromJson(json['arrayValue'] as Map<String, dynamic>),
-    bytesValue: json['bytesValue'] as String,
-    timestampValue: json['timestampValue'] as String,
-    integerValue: json['integerValue'] as String,
-    doubleValue: (json['doubleValue'] as num)?.toDouble(),
+    bytesValue: json['bytesValue'] as String?,
+    timestampValue: json['timestampValue'] as String?,
+    integerValue: json['integerValue'] as String?,
+    doubleValue: (json['doubleValue'] as num?)?.toDouble(),
     nullValue: json['nullValue'],
-    booleanValue: json['booleanValue'] as bool,
-    stringValue: json['stringValue'] as String,
-    referenceValue: json['referenceValue'] as String,
+    booleanValue: json['booleanValue'] as bool?,
+    stringValue: json['stringValue'] as String?,
+    referenceValue: json['referenceValue'] as String?,
     geoPointValue: json['geoPointValue'] == null
         ? null
         : GeoPoint.fromJson(json['geoPointValue'] as Map<String, dynamic>),
@@ -758,10 +685,9 @@ Value _$ValueFromJson(Map<String, dynamic> json) {
 
 ArrayValue _$ArrayValueFromJson(Map<String, dynamic> json) {
   return ArrayValue(
-    (json['values'] as List)
-        ?.map(
-            (e) => e == null ? null : Value.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    (json['values'] as List<dynamic>?)
+        ?.map((e) => Value.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 
@@ -774,15 +700,14 @@ Map<String, dynamic> _$ArrayValueToJson(ArrayValue instance) {
     }
   }
 
-  writeNotNull('values', instance.values?.map((e) => e?.toJson())?.toList());
+  writeNotNull('values', instance.values?.map((e) => e.toJson()).toList());
   return val;
 }
 
 MapValue _$MapValueFromJson(Map<String, dynamic> json) {
   return MapValue(
-    (json['fields'] as Map<String, dynamic>)?.map(
-      (k, e) => MapEntry(
-          k, e == null ? null : Value.fromJson(e as Map<String, dynamic>)),
+    (json['fields'] as Map<String, dynamic>?)?.map(
+      (k, e) => MapEntry(k, Value.fromJson(e as Map<String, dynamic>)),
     ),
   );
 }
@@ -797,14 +722,14 @@ Map<String, dynamic> _$MapValueToJson(MapValue instance) {
   }
 
   writeNotNull(
-      'fields', instance.fields?.map((k, e) => MapEntry(k, e?.toJson())));
+      'fields', instance.fields?.map((k, e) => MapEntry(k, e.toJson())));
   return val;
 }
 
 GeoPoint _$GeoPointFromJson(Map<String, dynamic> json) {
   return GeoPoint(
-    (json['latitude'] as num)?.toDouble(),
-    (json['longitude'] as num)?.toDouble(),
+    (json['latitude'] as num?)?.toDouble(),
+    (json['longitude'] as num?)?.toDouble(),
   );
 }
 
@@ -827,7 +752,7 @@ GeoFirePoint _$GeoFirePointFromJson(Map<String, dynamic> json) {
     json['geopoint'] == null
         ? null
         : GeoPoint.fromJson(json['geopoint'] as Map<String, dynamic>),
-    json['geohash'] as String,
+    json['geohash'] as String?,
   );
 }
 

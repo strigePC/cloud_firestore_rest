@@ -2,7 +2,7 @@ part of cloud_firestore_rest;
 
 class FirebaseFirestore {
   /// The [FirebaseApp] for this current [FirebaseFirestore] instance.
-  FirebaseApp app;
+  FirebaseApp? app;
 
   FirebaseFirestore._({this.app});
 
@@ -14,15 +14,13 @@ class FirebaseFirestore {
   }
 
   /// Returns an instance using a specified [FirebaseApp].
-  static FirebaseFirestore instanceFor({FirebaseApp app}) {
-    assert(app != null);
+  static FirebaseFirestore instanceFor({required FirebaseApp app}) {
     FirebaseFirestore newInstance = FirebaseFirestore._(app: app);
     return newInstance;
   }
 
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String collectionPath) {
-    assert(collectionPath != null, "a collection path cannot be null");
     assert(collectionPath.isNotEmpty,
         "a collectionPath path must be a non-empty string");
     assert(!collectionPath.contains("//"),
@@ -73,7 +71,6 @@ class FirebaseFirestore {
 
   /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference doc(String documentPath) {
-    assert(documentPath != null, "a document path cannot be null");
     assert(
         documentPath.isNotEmpty, "a document path must be a non-empty string");
     assert(!documentPath.contains("//"),
@@ -171,11 +168,11 @@ class FirebaseFirestore {
 
   @override
   bool operator ==(dynamic o) =>
-      o is FirebaseFirestore && o.app.name == app.name;
+      o is FirebaseFirestore && o.app!.name == app!.name;
 
   @override
-  int get hashCode => hash2(app.name, app.options);
+  int get hashCode => hash2(app!.name, app!.options);
 
   @override
-  String toString() => '$FirebaseFirestore(app: ${app.name})';
+  String toString() => '$FirebaseFirestore(app: ${app!.name})';
 }

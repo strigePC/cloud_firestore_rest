@@ -1,10 +1,10 @@
 part of cloud_firestore_rest;
 
 class _Util {
-  static dateTimeToJson(DateTime dateTime) =>
-      dateTime?.toUtc()?.toIso8601String();
+  static dateTimeToJson(DateTime? dateTime) =>
+      dateTime?.toUtc().toIso8601String();
 
-  static dateTimeFromJson(String json) =>
+  static dateTimeFromJson(String? json) =>
       json != null ? DateTime.parse(json) : null;
 
   /// Encode
@@ -16,7 +16,6 @@ class _Util {
     int numberOfChars = 9,
     bool auto = false,
   }) {
-    assert(auto != null);
     assert(latitude is double || latitude is String);
     assert(longitude is double || longitude is String);
     if (auto) {
@@ -79,7 +78,7 @@ class _Util {
     var isLon = true;
     double maxLat = 90, minLat = -90, maxLon = 180, minLon = -180, mid;
 
-    var hashValue = 0;
+    int? hashValue = 0;
     for (var i = 0, l = hashString.length; i < l; i++) {
       var code = hashString[i].toLowerCase();
       final base32Codes = '0123456789bcdefghjkmnpqrstuvwxyz';
@@ -90,7 +89,7 @@ class _Util {
       hashValue = base32CodesDic[code];
 
       for (var bits = 4; bits >= 0; bits--) {
-        var bit = (hashValue >> bits) & 1;
+        var bit = (hashValue! >> bits) & 1;
         if (isLon) {
           mid = (maxLon + minLon) / 2;
           if (bit == 1) {
@@ -141,9 +140,9 @@ class _Util {
   static String neighbor(String hashString, var direction) {
     var lonLat = decode(hashString);
     var neighborLat =
-        lonLat['latitude'] + direction[0] * lonLat['latitudeError'] * 2;
+        lonLat['latitude']! + direction[0] * lonLat['latitudeError'] * 2;
     var neighborLon =
-        lonLat['longitude'] + direction[1] * lonLat['longitudeError'] * 2;
+        lonLat['longitude']! + direction[1] * lonLat['longitudeError'] * 2;
     return encode(neighborLat, neighborLon, numberOfChars: hashString.length);
   }
 
@@ -156,16 +155,16 @@ class _Util {
   static List<String> neighbors(String hashString) {
     int hashStringLength = hashString.length;
     var lonlat = decode(hashString);
-    double lat = lonlat['latitude'];
-    double lon = lonlat['longitude'];
-    double latErr = lonlat['latitudeError'] * 2;
-    double lonErr = lonlat['longitudeError'] * 2;
+    double? lat = lonlat['latitude'];
+    double? lon = lonlat['longitude'];
+    double latErr = lonlat['latitudeError']! * 2;
+    double lonErr = lonlat['longitudeError']! * 2;
 
     var neighborLat, neighborLon;
 
     String encodeNeighbor(neighborLatDir, neighborLonDir) {
-      neighborLat = lat + neighborLatDir * latErr;
-      neighborLon = lon + neighborLonDir * lonErr;
+      neighborLat = lat! + neighborLatDir * latErr;
+      neighborLon = lon! + neighborLonDir * lonErr;
       return encode(neighborLat, neighborLon, numberOfChars: hashStringLength);
     }
 
@@ -246,12 +245,12 @@ class _Util {
   static double calcDistance(GeoPoint point1, GeoPoint point2) {
     // Earth's mean radius in meters
     final double radius = (EARTH_EQ_RADIUS + EARTH_POLAR_RADIUS) / 2;
-    double latDelta = (point1.latitude - point2.latitude).toRadians();
-    double lonDelta = (point1.longitude - point2.longitude).toRadians();
+    double latDelta = (point1.latitude! - point2.latitude!).toRadians();
+    double lonDelta = (point1.longitude! - point2.longitude!).toRadians();
 
     double a = (sin(latDelta / 2) * sin(latDelta / 2)) +
-        (cos(point1.latitude.toRadians()) *
-            cos(point2.latitude.toRadians()) *
+        (cos(point1.latitude!.toRadians()) *
+            cos(point2.latitude!.toRadians()) *
             sin(lonDelta / 2) *
             sin(lonDelta / 2));
     double distance = radius * 2 * atan2(sqrt(a), sqrt(1 - a)) / 1000;

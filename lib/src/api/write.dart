@@ -12,29 +12,29 @@ class Write {
   /// mask, but not present in the input document, are deleted from the document
   /// on the server. The field paths in this mask must not contain a reserved
   /// field name.
-  final DocumentMask updateMask;
+  final DocumentMask? updateMask;
 
   /// The transforms to perform after update.
   ///
   /// This field can be set only when the operation is [update]. If present,
   /// this write is equivalent to performing update and transform to the same
   /// document atomically and in order.
-  final List<FieldTransform> updateTransforms;
+  final List<FieldTransform>? updateTransforms;
 
   /// An optional precondition on the document.
   ///
   /// The write will fail if this is set and not met by the target document.
-  final Precondition currentDocument;
+  final Precondition? currentDocument;
 
   /// A document to write.
-  final Document update;
+  final Document? update;
 
   /// A document name to delete. In the format:
   /// projects/{project_id}/databases/{database_id}/documents/{document_path}.
-  final String delete;
+  final String? delete;
 
   /// Applies a transformation to a document.
-  final DocumentTransform transform;
+  final DocumentTransform? transform;
 
   Write({
     this.updateMask,

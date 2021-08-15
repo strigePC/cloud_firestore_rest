@@ -10,7 +10,7 @@ class DocumentMask {
   /// path syntax reference.
   final List<String> fieldPaths;
 
-  DocumentMask(this.fieldPaths) : assert(fieldPaths != null);
+  DocumentMask(this.fieldPaths);
 
   factory DocumentMask.fromJson(Map<String, dynamic> json) =>
       _$DocumentMaskFromJson(json);

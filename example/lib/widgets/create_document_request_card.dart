@@ -85,10 +85,12 @@ class _CreateDocumentRequestCardState extends State<CreateDocumentRequestCard> {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: Text('Create Todo'),
-                color: Theme.of(context).primaryColor,
-                textColor: Colors.white,
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                  onPrimary: Colors.white,
+                ),
                 onPressed:
                     loading || title.trim().isEmpty || body.trim().isEmpty
                         ? null
@@ -96,8 +98,7 @@ class _CreateDocumentRequestCardState extends State<CreateDocumentRequestCard> {
               ),
             ),
             if (last != null && !loading) FieldsWidget(fields: last.fields),
-            if (loading)
-              Center(child: CircularProgressIndicator()),
+            if (loading) Center(child: CircularProgressIndicator()),
           ],
         ),
       ),

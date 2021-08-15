@@ -8,10 +8,10 @@ class RunQueryResponse {
   /// in the request. If set, no other fields will be set in this response.
   ///
   /// A base64-encoded string.
-  final String transaction;
+  final String? transaction;
 
   /// A query result. Not set when reporting partial progress.
-  final Document document;
+  final Document? document;
 
   /// The time at which the document was read. This may be monotonically
   /// increasing; in this case, the previous documents in the result stream are
@@ -24,11 +24,11 @@ class RunQueryResponse {
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
   @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
-  final DateTime readTime;
+  final DateTime? readTime;
 
   /// The number of results that have been skipped due to an offset between the
   /// last response and the current response.
-  final int skippedResults;
+  final int? skippedResults;
 
   RunQueryResponse(
       this.transaction, this.document, this.readTime, this.skippedResults);

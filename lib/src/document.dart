@@ -7,7 +7,7 @@ part of cloud_firestore_rest;
 class Document {
   /// The resource name of the document, for example
   /// projects/{project_id}/databases/{database_id}/documents/{document_path}.
-  String name;
+  String? name;
 
   /// The document's fields.
   ///
@@ -35,7 +35,7 @@ class Document {
   ///
   /// An object containing a list of "key": value pairs. Example:
   /// { "name": "wrench", "mass": "1.3kg", "count": "3" }.
-  Map<String, Value> fields;
+  Map<String, Value>? fields;
 
   /// Output only. The time at which the document was created.
   ///
@@ -47,7 +47,7 @@ class Document {
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
   @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
-  final DateTime createTime;
+  final DateTime? createTime;
 
   /// Output only. The time at which the document was last changed.
   ///
@@ -59,7 +59,7 @@ class Document {
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
   @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
-  final DateTime updateTime;
+  final DateTime? updateTime;
 
   Document({this.name, this.fields, this.createTime, this.updateTime});
 

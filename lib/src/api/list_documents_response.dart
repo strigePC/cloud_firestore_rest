@@ -4,10 +4,10 @@ part of cloud_firestore_rest;
 @JsonSerializable()
 class ListDocumentsResponse {
   /// The Documents found.
-  final List<Document> documents;
+  final List<Document>? documents;
 
   /// The next page token.
-  final String nextPageToken;
+  final String? nextPageToken;
 
   ListDocumentsResponse(this.documents, this.nextPageToken);
 

@@ -13,9 +13,7 @@ class Cursor {
   /// the sort order defined by the query.
   final bool before;
 
-  Cursor(this.values, this.before)
-      : assert(values != null),
-        assert(before != null);
+  Cursor(this.values, this.before);
 
   factory Cursor.fromJson(Map<String, dynamic> json) => _$CursorFromJson(json);
 

@@ -11,12 +11,12 @@ class CollectionReference extends Query {
   /// Returns the parent [DocumentReference] of this collection or `null`.
   ///
   /// If this collection is a root collection, `null` is returned.
-  DocumentReference get parent {
+  DocumentReference? get parent {
     if (_components.length <= 1) return null;
 
     return DocumentReference._(
       _firestore,
-      _components.take(_components.length - 1),
+      _components.take(_components.length - 1) as List<String>,
     );
   }
 
@@ -31,21 +31,20 @@ class CollectionReference extends Query {
   /// so that the resulting list will be chronologically-sorted.
   Future<DocumentReference> add(
     Map<String, dynamic> data, {
-    Map<String, String> headers,
+    Map<String, String>? headers,
   }) async {
-    assert(data != null);
     final res = await RestApi.createDocument(
       path,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
-      projectId: _firestore.app.options.projectId,
+      projectId: _firestore.app!.options.projectId,
       headers: headers,
     );
 
     return DocumentReference._(
       _firestore,
-      _components.followedBy([res.name.split('/').last]),
+      _components.followedBy([res.name!.split('/').last]) as List<String>,
     );
 
     // final DocumentReference newDocument = doc();
@@ -59,7 +58,7 @@ class CollectionReference extends Query {
   ///
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
-  DocumentReference doc([String path]) {
+  DocumentReference doc([String? path]) {
     // TODO: add id generator
     if (path != null) {
       assert(path.isNotEmpty, "a document path must be a non-empty string");
@@ -69,7 +68,7 @@ class CollectionReference extends Query {
 
     return DocumentReference._(
       _firestore,
-      _components.followedBy(path.split('/')).toList(),
+      _components.followedBy(path!.split('/')).toList(),
     );
   }
 

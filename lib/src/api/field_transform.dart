@@ -8,7 +8,7 @@ class FieldTransform {
   final String fieldPath;
 
   /// Sets the field to the given server value.
-  final ServerValue setToServerValue;
+  final ServerValue? setToServerValue;
 
   /// Adds the given value to the field's current value.
   ///
@@ -19,7 +19,7 @@ class FieldTransform {
   /// Double arithmetic and representation of double values follow IEEE 754
   /// semantics. If there is positive/negative integer overflow, the field is
   /// resolved to the largest magnitude positive/negative integer.
-  final Value increment;
+  final Value? increment;
 
   /// Sets the field to the maximum of its current value and the given value.
   ///
@@ -32,7 +32,7 @@ class FieldTransform {
   /// 0, 0.0, and -0.0 are all zero. The maximum of a zero stored value and zero
   /// input value is always the stored value. The maximum of any numeric value x
   /// and NaN is NaN.
-  final Value maximum;
+  final Value? maximum;
 
   /// Sets the field to the minimum of its current value and the given value.
   ///
@@ -45,7 +45,7 @@ class FieldTransform {
   /// change. 0, 0.0, and -0.0 are all zero. The minimum of a zero stored value
   /// and zero input value is always the stored value. The minimum of any
   /// numeric value x and NaN is NaN.
-  final Value minimum;
+  final Value? minimum;
 
   /// Append the given elements in order if they are not already present in the
   /// current field value. If the field is not an array, or if the field does
@@ -57,7 +57,7 @@ class FieldTransform {
   /// the first will be considered.
   ///
   /// The corresponding transform_result will be the null value.
-  final ArrayValue appendMissingElements;
+  final ArrayValue? appendMissingElements;
 
   /// Remove all of the given elements from the array in the field. If the field
   /// is not an array, or if the field does not yet exist, it is set to the
@@ -69,7 +69,7 @@ class FieldTransform {
   /// there are duplicates.
   ///
   /// The corresponding transform_result will be the null value.
-  final ArrayValue removeAllFromArray;
+  final ArrayValue? removeAllFromArray;
 
   FieldTransform(
     this.fieldPath,
@@ -79,8 +79,7 @@ class FieldTransform {
     this.minimum,
     this.appendMissingElements,
     this.removeAllFromArray,
-  )   : assert(fieldPath != null),
-        assert(
+  )   : assert(
           (setToServerValue != null) ^
               (increment != null) ^
               (maximum != null) ^

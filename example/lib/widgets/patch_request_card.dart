@@ -125,10 +125,12 @@ class _PatchRequestCardState extends State<PatchRequestCard> {
         ),
         Align(
           alignment: Alignment.centerRight,
-          child: RaisedButton(
+          child: ElevatedButton(
             child: Text('Update Todo'),
-            color: Theme.of(context).primaryColor,
-            textColor: Colors.white,
+            style: ElevatedButton.styleFrom(
+              primary: Theme.of(context).primaryColor,
+              onPrimary: Colors.white,
+            ),
             onPressed: updating || title.trim().isEmpty || body.trim().isEmpty
                 ? null
                 : onUpdateTodo,

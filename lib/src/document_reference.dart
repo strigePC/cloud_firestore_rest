@@ -3,7 +3,7 @@ part of cloud_firestore_rest;
 class DocumentReference {
   /// The Firestore instance associated with this document reference.
   final FirebaseFirestore _firestore;
-  List<String> _fields;
+  List<String>? _fields;
 
   /// This document's given ID within the collection.
   final String id;
@@ -15,7 +15,7 @@ class DocumentReference {
   CollectionReference get parent {
     return CollectionReference._(
       _firestore,
-      components.take(components.length - 1),
+      components.take(components.length - 1) as List<String>,
     );
   }
 
@@ -26,7 +26,6 @@ class DocumentReference {
   /// Gets a [CollectionReference] instance that refers to the collection at the
   /// specified path, relative from this [DocumentReference].
   CollectionReference collection(String collectionPath) {
-    assert(collectionPath != null, "a collection path cannot be null");
     assert(collectionPath.isNotEmpty,
         "a collectionPath path must be a non-empty string");
     assert(!collectionPath.contains("//"),
@@ -36,21 +35,20 @@ class DocumentReference {
 
     return CollectionReference._(
       _firestore,
-      components.followedBy(collectionPath.split('/')),
+      components.followedBy(collectionPath.split('/')) as List<String>,
     );
   }
 
   /// Deletes the current document from the collection.
-  Future<void> delete({Map<String, String> headers}) async {
+  Future<void> delete({Map<String, String>? headers}) async {
     await RestApi.delete(
       path,
-      projectId: _firestore.app.options.projectId,
+      projectId: _firestore.app!.options.projectId,
       headers: headers,
     );
   }
 
   DocumentReference fields(List<String> fields) {
-    assert(fields != null);
     _fields = fields;
     return this;
   }
@@ -60,15 +58,15 @@ class DocumentReference {
   /// By providing [options], this method can be configured to fetch results only
   /// from the server, only from the local cache or attempt to fetch results
   /// from the server and fall back to the cache (which is the default).
-  Future<DocumentSnapshot> get({Map<String, String> headers}) async {
+  Future<DocumentSnapshot> get({Map<String, String>? headers}) async {
     try {
-      DocumentMask mask;
-      if (_fields != null && _fields.isNotEmpty) mask = DocumentMask(_fields);
+      DocumentMask? mask;
+      if (_fields != null && _fields!.isNotEmpty) mask = DocumentMask(_fields!);
 
       final res = await RestApi.get(
         path,
         headers: headers,
-        projectId: _firestore.app.options.projectId,
+        projectId: _firestore.app!.options.projectId,
         mask: mask,
       );
 
@@ -76,7 +74,7 @@ class DocumentReference {
         id,
         true,
         this,
-        res.fields.map((key, value) => MapEntry(key, value.decode)),
+        res.fields!.map((key, value) => MapEntry(key, value.decode)),
       );
     } on FirebaseException catch (e) {
       if (e.code == '404') {
@@ -103,24 +101,23 @@ class DocumentReference {
   /// document instead of overwriting.
   Future<void> set(
     Map<String, dynamic> data, {
-    SetOptions options,
-    Map<String, String> headers,
+    SetOptions? options,
+    Map<String, String>? headers,
   }) async {
-    assert(data != null);
 
-    DocumentMask mask;
+    DocumentMask? mask;
     if (options != null) {
-      if (options.merge != null && options.merge) {
+      if (options.merge != null && options.merge!) {
         mask = DocumentMask(data.keys.toList());
       } else if (options.mergeFields != null) {
-        mask = DocumentMask(options.mergeFields);
+        mask = DocumentMask(options.mergeFields!);
       }
     }
 
     await RestApi.patch(
       path,
       headers: headers,
-      projectId: _firestore.app.options.projectId,
+      projectId: _firestore.app!.options.projectId,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),
@@ -134,14 +131,12 @@ class DocumentReference {
   /// If no document exists yet, the update will fail.
   Future<void> update(
     Map<String, dynamic> data, {
-    Map<String, String> headers,
+    Map<String, String>? headers,
   }) async {
-    assert(data != null);
-
     await RestApi.patch(
       path,
       headers: headers,
-      projectId: _firestore.app.options.projectId,
+      projectId: _firestore.app!.options.projectId,
       body: Document(
         fields: data.map((key, value) => MapEntry(key, Value.fromValue(value))),
       ),

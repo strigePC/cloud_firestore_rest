@@ -5,7 +5,7 @@ part of cloud_firestore_rest;
 class Precondition {
   /// When set to true, the target document must exist. When set to false, the
   /// target document must not exist.
-  final bool exists;
+  final bool? exists;
 
   /// When set, the target document must exist and have been last updated at
   /// that time.
@@ -14,7 +14,7 @@ class Precondition {
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
   @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
-  final DateTime updateTime;
+  final DateTime? updateTime;
 
   Precondition({this.exists, this.updateTime})
       : assert(exists != null || updateTime != null,

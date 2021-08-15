@@ -3,16 +3,16 @@ part of cloud_firestore_rest;
 @JsonSerializable(createToJson: false)
 class Value {
   final dynamic nullValue;
-  final bool booleanValue;
-  final String integerValue;
-  final double doubleValue;
-  final String timestampValue;
-  final String stringValue;
-  final String bytesValue;
-  final String referenceValue;
-  final GeoPoint geoPointValue;
-  final ArrayValue arrayValue;
-  final MapValue mapValue;
+  final bool? booleanValue;
+  final String? integerValue;
+  final double? doubleValue;
+  final String? timestampValue;
+  final String? stringValue;
+  final String? bytesValue;
+  final String? referenceValue;
+  final GeoPoint? geoPointValue;
+  final ArrayValue? arrayValue;
+  final MapValue? mapValue;
 
   Value({
     this.mapValue,
@@ -67,14 +67,14 @@ class Value {
     if (value is Uint64List) return Value(bytesValue: base64Encode(value));
     if (value is DocumentReference) {
       return Value(
-        referenceValue: 'projects/${value._firestore.app.options.projectId}'
+        referenceValue: 'projects/${value._firestore.app!.options.projectId}'
             '/databases/(default)'
             '/documents/${value.path}',
       );
     }
     if (value is CollectionReference) {
       return Value(
-        referenceValue: 'projects/${value._firestore.app.options.projectId}'
+        referenceValue: 'projects/${value._firestore.app!.options.projectId}'
             '/databases/(default)'
             '/documents/${value.path}',
       );
@@ -102,14 +102,14 @@ class Value {
 
   dynamic get decode {
     if (stringValue != null) return stringValue;
-    if (integerValue != null) return int.parse(integerValue);
+    if (integerValue != null) return int.parse(integerValue!);
     if (booleanValue != null) return booleanValue;
     if (doubleValue != null) return doubleValue;
-    if (timestampValue != null) return DateTime.parse(timestampValue);
+    if (timestampValue != null) return DateTime.parse(timestampValue!);
     if (geoPointValue != null) return geoPointValue;
-    if (arrayValue != null) return arrayValue.decode;
-    if (mapValue != null) return mapValue.decode;
-    if (bytesValue != null) return base64Decode(bytesValue);
+    if (arrayValue != null) return arrayValue!.decode;
+    if (mapValue != null) return mapValue!.decode;
+    if (bytesValue != null) return base64Decode(bytesValue!);
     return null;
   }
 
@@ -147,7 +147,7 @@ class Value {
 
 @JsonSerializable()
 class ArrayValue {
-  final List<Value> values;
+  final List<Value>? values;
 
   ArrayValue(this.values);
 
@@ -176,7 +176,7 @@ class ArrayValue {
 
 @JsonSerializable()
 class MapValue {
-  final Map<String, Value> fields;
+  final Map<String, Value>? fields;
 
   MapValue(this.fields);
 

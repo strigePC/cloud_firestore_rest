@@ -13,11 +13,11 @@ class WriteResult {
   /// up to nine fractional digits. Examples: "2014-10-02T15:01:23Z" and
   /// "2014-10-02T15:01:23.045123456Z".
   @JsonKey(toJson: _Util.dateTimeToJson, fromJson: _Util.dateTimeFromJson)
-  final DateTime updateTime;
+  final DateTime? updateTime;
 
   /// The results of applying each [FieldTransform],
   /// in the same order.
-  final List<Value> transformResults;
+  final List<Value>? transformResults;
 
   WriteResult(this.updateTime, this.transformResults);
 

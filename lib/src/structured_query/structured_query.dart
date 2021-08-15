@@ -4,13 +4,13 @@ part of cloud_firestore_rest;
 @JsonSerializable()
 class StructuredQuery {
   /// The projection to return.
-  Projection select;
+  Projection? select;
 
   /// The collections to query.
-  List<CollectionSelector> from;
+  List<CollectionSelector>? from;
 
   /// The filter to apply.
-  Filter where;
+  Filter? where;
 
   /// The order to apply to the query results.
   ///
@@ -25,24 +25,24 @@ class StructuredQuery {
   /// - SELECT * FROM Foo ORDER BY A becomes SELECT * FROM Foo ORDER BY A, __name__
   /// - SELECT * FROM Foo ORDER BY A DESC becomes SELECT * FROM Foo ORDER BY A DESC, __name__ DESC
   /// - SELECT * FROM Foo WHERE A > 1 becomes SELECT * FROM Foo WHERE A > 1 ORDER BY A, __name__
-  List<Order> orderBy;
+  List<Order>? orderBy;
 
   /// A starting point for the query results.
-  Cursor startAt;
+  Cursor? startAt;
 
   /// A end point for the query results.
-  Cursor endAt;
+  Cursor? endAt;
 
   /// The number of results to skip.
   ///
   /// Applies before limit, but after all other constraints. Must be >= 0 if
   /// specified.
-  int offset;
+  int? offset;
 
   /// The maximum number of results to return.
   ///
   /// Applies after all other constraints. Must be >= 0 if specified.
-  int limit;
+  int? limit;
 
   StructuredQuery();
 

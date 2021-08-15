@@ -10,9 +10,7 @@ class DocumentTransform {
   final List<FieldTransform> fieldTransforms;
 
   DocumentTransform(this.document, this.fieldTransforms)
-      : assert(document != null),
-        assert(fieldTransforms != null),
-        assert(
+      : assert(
             fieldTransforms.isNotEmpty, 'Field transforms must not be empty');
 
   factory DocumentTransform.fromJson(Map<String, dynamic> json) =>

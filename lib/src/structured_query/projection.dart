@@ -7,7 +7,7 @@ class Projection {
   ///
   /// If empty, all fields are returned. To only return the name of the
   /// document, use ['__name__'].
-  final List<FieldReference> fields;
+  final List<FieldReference>? fields;
 
   Projection(this.fields);
 

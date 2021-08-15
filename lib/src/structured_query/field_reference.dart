@@ -5,7 +5,7 @@ part of cloud_firestore_rest;
 class FieldReference {
   final String fieldPath;
 
-  FieldReference(this.fieldPath) : assert(fieldPath != null);
+  FieldReference(this.fieldPath);
 
   factory FieldReference.fromJson(Map<String, dynamic> json) =>
       _$FieldReferenceFromJson(json);

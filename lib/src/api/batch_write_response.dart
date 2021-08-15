@@ -6,12 +6,12 @@ class BatchWriteResponse {
   /// The result of applying the writes.
   ///
   /// This i-th write result corresponds to the i-th write in the request.
-  final List<WriteResult> writeResults;
+  final List<WriteResult>? writeResults;
 
   /// The status of applying the writes.
   ///
   /// This i-th write status corresponds to the i-th write in the request.
-  final List<Status> status;
+  final List<Status>? status;
 
   BatchWriteResponse(this.writeResults, this.status);
 

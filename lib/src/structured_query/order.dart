@@ -10,9 +10,7 @@ class Order {
   final Direction direction;
 
   Order(this.field, {this.direction = Direction.ascending})
-      : assert(field != null),
-        assert(direction != null),
-        assert(direction != Direction.directionUnspecified);
+      : assert(direction != Direction.directionUnspecified);
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 

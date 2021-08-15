@@ -6,9 +6,9 @@ class Query {
   final StructuredQuery structuredQuery = StructuredQuery();
   final List<String> _components;
 
-  List<String> _geoSearchArea;
-  String _geoFieldName;
-  GeoPoint _geoCenter;
+  List<String>? _geoSearchArea;
+  String? _geoFieldName;
+  late GeoPoint _geoCenter;
 
   Query._(this._firestore, this._components);
 
@@ -26,7 +26,6 @@ class Query {
   /// passed to the query.
   Map<String, dynamic> _assertQueryCursorSnapshot(
       DocumentSnapshot documentSnapshot) {
-    assert(documentSnapshot != null);
     assert(documentSnapshot.exists,
         "a document snapshot must exist to be used within a query");
 
@@ -84,10 +83,8 @@ class Query {
       structuredQuery.orderBy != null,
       'orderBy() method should be called before setting cursors',
     );
-    assert(fields != null);
-
     assert(
-      fields.length <= structuredQuery.orderBy.length,
+      fields.length <= structuredQuery.orderBy!.length,
       "Too many arguments provided. "
       "The number of arguments must be less than or equal to the number of "
       "orderBy() clauses.",
@@ -184,13 +181,13 @@ class Query {
   ///
   /// To modify how the query is fetched, the [options] parameter can be provided
   /// with a [GetOptions] instance.
-  Future<QuerySnapshot> get({Map<String, String> headers}) async {
+  Future<QuerySnapshot> get({Map<String, String>? headers}) async {
     structuredQuery.from = [CollectionSelector(_components.last)];
 
     if (_geoSearchArea == null) {
       final results = await RestApi.runQuery(
         _components.take(_components.length - 1).join('/'),
-        projectId: _firestore.app.options.projectId,
+        projectId: _firestore.app!.options.projectId,
         structuredQuery: structuredQuery,
         headers: headers,
       );
@@ -198,18 +195,18 @@ class Query {
       return QuerySnapshot._(results
           .map(
             (result) => QueryDocumentSnapshot._(
-              result.document.name.split('/').last,
+              result.document!.name!.split('/').last,
               DocumentReference._(
                 _firestore,
-                result.document.name.split('/').skip(5).toList(),
+                result.document!.name!.split('/').skip(5).toList(),
               ),
-              result.document.fields
+              result.document!.fields!
                   .map((key, value) => MapEntry(key, value.decode)),
             ),
           )
           .toList());
     } else {
-      final res = await Future.wait(_geoSearchArea.map((hash) {
+      final res = await Future.wait(_geoSearchArea!.map((hash) {
         final query = Query._(_firestore, _components);
         query.structuredQuery.select = structuredQuery.select;
         query.structuredQuery.limit = structuredQuery.limit;
@@ -254,11 +251,11 @@ class Query {
   Query limitToLast(int limit) {
     assert(limit > 0, "limit must be a positive number greater than 0");
     assert(
-      structuredQuery.orderBy != null && structuredQuery.orderBy.isNotEmpty,
+      structuredQuery.orderBy != null && structuredQuery.orderBy!.isNotEmpty,
       "limitToLast() queries require specifying at least one orderBy() clause",
     );
 
-    structuredQuery.orderBy = structuredQuery.orderBy
+    structuredQuery.orderBy = structuredQuery.orderBy!
         .map((order) => Order(
               order.field,
               direction: order.direction == Direction.ascending
@@ -291,7 +288,6 @@ class Query {
   /// or [endAtDocument] because the order by clause on the document id
   /// is added by these methods implicitly.
   Query orderBy(String field, {bool descending = false}) {
-    assert(field != null && descending != null);
     assert(!_hasStartCursor(),
         "Invalid query. You must not call startAt(), startAtDocument(), startAfter() or startAfterDocument() before calling orderBy()");
     assert(!_hasEndCursor(),
@@ -310,15 +306,15 @@ class Query {
     ));
 
     if (structuredQuery.where != null) {
-      final filters = <SingularFieldFilter>[];
+      final filters = <SingularFieldFilter?>[];
 
-      if (structuredQuery.where.compositeFilter != null) {
-        for (final filter in structuredQuery.where.compositeFilter.filters) {
+      if (structuredQuery.where!.compositeFilter != null) {
+        for (final filter in structuredQuery.where!.compositeFilter!.filters) {
           filters.add(filter.unaryFilter ?? filter.fieldFilter);
         }
       } else {
-        filters.add(structuredQuery.where.unaryFilter ??
-            structuredQuery.where.fieldFilter);
+        filters.add(structuredQuery.where!.unaryFilter ??
+            structuredQuery.where!.fieldFilter);
       }
 
       for (final filter in filters) {
@@ -349,7 +345,7 @@ class Query {
         }
 
         for (final order in orders) {
-          if (filter.field.fieldPath == '__name__') {
+          if (filter!.field!.fieldPath == '__name__') {
             assert(
               order.field.fieldPath == '__name__',
               "'__name__' cannot be used in conjunction with a different "
@@ -454,20 +450,20 @@ class Query {
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
     dynamic arrayContains,
-    List<dynamic> arrayContainsAny,
-    List<dynamic> whereIn,
-    bool isNull,
-    double isWithin,
-    GeoPoint centeredAt,
+    List<dynamic>? arrayContainsAny,
+    List<dynamic>? whereIn,
+    bool? isNull,
+    double? isWithin,
+    GeoPoint? centeredAt,
   }) {
     assert(
       (isWithin == null && centeredAt == null) ||
           (isWithin != null && centeredAt != null),
       'centeredAt and isWithin parameters must be used together',
     );
-    final filters = <SingularFieldFilter>[];
+    final filters = <SingularFieldFilter?>[];
     if (structuredQuery.where?.compositeFilter != null) {
-      for (final filter in structuredQuery.where.compositeFilter.filters) {
+      for (final filter in structuredQuery.where!.compositeFilter!.filters) {
         filters.add(filter.unaryFilter ?? filter.fieldFilter);
       }
     } else if (structuredQuery.where?.unaryFilter != null) {
@@ -533,7 +529,7 @@ class Query {
       final center = GeoFirePoint.fromGeoPoint(centeredAt);
       _geoCenter = centeredAt;
       int precision = _Util.setPrecision(isWithin);
-      String centerHash = center.geohash.substring(0, precision);
+      String centerHash = center.geohash!.substring(0, precision);
       _geoSearchArea = _Util.neighbors(centerHash)..add(centerHash);
       _geoFieldName = field;
       structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];
@@ -552,11 +548,11 @@ class Query {
         // inequality operator is invoked
         if (filter.op.isInequality() &&
             structuredQuery.orderBy != null &&
-            structuredQuery.orderBy.isNotEmpty) {
+            structuredQuery.orderBy!.isNotEmpty) {
           assert(
-              filter.field == structuredQuery.orderBy[0].field,
+              filter.field == structuredQuery.orderBy![0].field,
               "The initial orderBy() field "
-              "'${structuredQuery.orderBy[0].field}' has to be the same as the "
+              "'${structuredQuery.orderBy![0].field}' has to be the same as the "
               "where() field parameter '${filter.field}' "
               "when an inequality operator is invoked.");
         }
@@ -569,17 +565,17 @@ class Query {
             filter.op == FieldOperator.arrayContainsAny) {
           assert(
             filter.value.arrayValue != null &&
-                filter.value.arrayValue.values.isNotEmpty,
+                filter.value.arrayValue!.values!.isNotEmpty,
             "A non-empty [List] is required for '${filter.op}' filters.",
           );
           assert(
-            filter.value.arrayValue.values.length <= 10,
+            filter.value.arrayValue!.values!.length <= 10,
             "'${filter.op}' filters support a maximum of 10 elements in the "
             "value [List].",
           );
           assert(
-            filter.value.arrayValue.values
-                .where((value) => value == null)
+            filter.value.arrayValue!.values!
+                .where((value) => false)
                 .isEmpty,
             "'${filter.op}' filters cannot contain 'null' in the [List].",
           );
@@ -642,14 +638,14 @@ class Query {
           filters
               .map((filter) => filter is UnaryFilter
                   ? Filter(unaryFilter: filter)
-                  : Filter(fieldFilter: filter))
+                  : Filter(fieldFilter: filter as FieldFilter?))
               .toList(),
         ),
       );
     } else if (filters.length > 0) {
       structuredQuery.where = filters.first is UnaryFilter
-          ? Filter(unaryFilter: filters.first)
-          : Filter(fieldFilter: filters.first);
+          ? Filter(unaryFilter: filters.first as UnaryFilter?)
+          : Filter(fieldFilter: filters.first as FieldFilter?);
     }
 
     return this;

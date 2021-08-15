@@ -2,20 +2,20 @@ part of cloud_firestore_rest;
 
 /// A wrapper class for [UnaryFilter] and [FieldFilter]
 abstract class SingularFieldFilter {
-  FieldReference field;
+  FieldReference? field;
 }
 
 /// A filter.
 @JsonSerializable()
 class Filter {
   /// A composite filter.
-  final CompositeFilter compositeFilter;
+  final CompositeFilter? compositeFilter;
 
   /// A filter on a document field.
-  final FieldFilter fieldFilter;
+  final FieldFilter? fieldFilter;
 
   /// A filter that takes exactly one argument.
-  final UnaryFilter unaryFilter;
+  final UnaryFilter? unaryFilter;
 
   Filter({this.compositeFilter, this.fieldFilter, this.unaryFilter})
       : assert(
@@ -40,14 +40,11 @@ class CompositeFilter {
   final List<Filter> filters;
 
   CompositeFilter(this.op, this.filters)
-      : assert(op != null),
-        assert(op != CompositeOperator.operatorUnspecified),
-        assert(filters != null),
+      : assert(op != CompositeOperator.operatorUnspecified),
         assert(filters.isNotEmpty);
 
   CompositeFilter.and(this.filters)
       : op = CompositeOperator.and,
-        assert(filters != null),
         assert(filters.isNotEmpty);
 
   factory CompositeFilter.fromJson(Map<String, dynamic> json) =>
@@ -69,10 +66,7 @@ class FieldFilter extends SingularFieldFilter {
   final Value value;
 
   FieldFilter(this.field, this.op, this.value)
-      : assert(field != null),
-        assert(op != null),
-        assert(op != FieldOperator.operatorUnspecified),
-        assert(value != null);
+      : assert(op != FieldOperator.operatorUnspecified);
 
   factory FieldFilter.fromJson(Map<String, dynamic> json) =>
       _$FieldFilterFromJson(json);
@@ -130,10 +124,10 @@ class FieldFilter extends SingularFieldFilter {
 @JsonSerializable()
 class UnaryFilter extends SingularFieldFilter {
   /// The unary operator to apply.
-  final UnaryOperator op;
+  final UnaryOperator? op;
 
   /// The field to which to apply the operator.
-  final FieldReference field;
+  final FieldReference? field;
 
   UnaryFilter(this.field, this.op);
 

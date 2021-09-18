@@ -245,12 +245,12 @@ class _Util {
   static double calcDistance(GeoPoint point1, GeoPoint point2) {
     // Earth's mean radius in meters
     final double radius = (EARTH_EQ_RADIUS + EARTH_POLAR_RADIUS) / 2;
-    double latDelta = (point1.latitude! - point2.latitude!).toRadians();
-    double lonDelta = (point1.longitude! - point2.longitude!).toRadians();
+    double latDelta = (point1.latitude - point2.latitude).toRadians();
+    double lonDelta = (point1.longitude - point2.longitude).toRadians();
 
     double a = (sin(latDelta / 2) * sin(latDelta / 2)) +
-        (cos(point1.latitude!.toRadians()) *
-            cos(point2.latitude!.toRadians()) *
+        (cos(point1.latitude.toRadians()) *
+            cos(point2.latitude.toRadians()) *
             sin(lonDelta / 2) *
             sin(lonDelta / 2));
     double distance = radius * 2 * atan2(sqrt(a), sqrt(1 - a)) / 1000;

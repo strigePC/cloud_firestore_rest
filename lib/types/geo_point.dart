@@ -1,16 +1,10 @@
 part of cloud_firestore_rest;
 
-@JsonSerializable()
 class GeoPoint {
   final double latitude;
   final double longitude;
 
   GeoPoint(this.latitude, this.longitude);
-
-  factory GeoPoint.fromJson(Map<String, dynamic> json) =>
-      _$GeoPointFromJson(json);
-
-  Map<String, dynamic> toJson() => _$GeoPointToJson(this);
 
   double distanceTo(GeoPoint point) => _Util.calcDistance(this, point);
 
@@ -22,6 +16,10 @@ class GeoPoint {
 
 @JsonSerializable()
 class GeoFirePoint {
+  @JsonKey(
+    fromJson: GeoFirePoint._geoPointFromJson,
+    toJson: GeoFirePoint._geoPointToJson,
+  )
   final GeoPoint? geopoint;
   final String? geohash;
 
@@ -38,4 +36,8 @@ class GeoFirePoint {
       _$GeoFirePointFromJson(json);
 
   Map<String, dynamic> toJson() => _$GeoFirePointToJson(this);
+
+  static GeoPoint? _geoPointFromJson(GeoPoint? geo) => geo;
+
+  static GeoPoint? _geoPointToJson(GeoPoint? geo) => geo;
 }

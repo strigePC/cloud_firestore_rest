@@ -10,6 +10,10 @@ class Value {
   final String? stringValue;
   final String? bytesValue;
   final String? referenceValue;
+  @JsonKey(
+    fromJson: GeoFirePoint._geoPointFromJson,
+    toJson: GeoFirePoint._geoPointToJson,
+  )
   final GeoPoint? geoPointValue;
   final ArrayValue? arrayValue;
   final MapValue? mapValue;
@@ -131,13 +135,12 @@ class Value {
     writeNotNull('stringValue', stringValue);
     writeNotNull('bytesValue', bytesValue);
     writeNotNull('referenceValue', referenceValue);
-    writeNotNull('geoPointValue', geoPointValue?.toJson());
+    writeNotNull('geoPointValue', geoPointValue);
     writeNotNull('arrayValue', arrayValue?.toJson());
     writeNotNull('mapValue', mapValue?.toJson());
     if (val.isEmpty) val['nullValue'] = null;
     return val;
   }
-
 
   @override
   String toString() {

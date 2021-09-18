@@ -529,7 +529,7 @@ class Query {
       final center = GeoFirePoint.fromGeoPoint(centeredAt);
       _geoCenter = centeredAt;
       int precision = _Util.setPrecision(isWithin);
-      String centerHash = center.geohash!.substring(0, precision);
+      String centerHash = center.geohash.substring(0, precision);
       _geoSearchArea = _Util.neighbors(centerHash)..add(centerHash);
       _geoFieldName = field;
       structuredQuery.orderBy = [Order(FieldReference('$field.geohash'))];

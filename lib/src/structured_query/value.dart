@@ -11,8 +11,8 @@ class Value {
   final String? bytesValue;
   final String? referenceValue;
   @JsonKey(
-    fromJson: GeoFirePoint._geoPointFromJson,
-    toJson: GeoFirePoint._geoPointToJson,
+    fromJson: GeoFirePoint._geoPointFromJsonNullable,
+    toJson: GeoFirePoint._geoPointToJsonNullable,
   )
   final GeoPoint? geoPointValue;
   final ArrayValue? arrayValue;

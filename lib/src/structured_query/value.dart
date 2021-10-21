@@ -10,10 +10,6 @@ class Value {
   final String? stringValue;
   final String? bytesValue;
   final String? referenceValue;
-  @JsonKey(
-    fromJson: GeoFirePoint._geoPointFromJsonNullable,
-    toJson: GeoFirePoint._geoPointToJsonNullable,
-  )
   final GeoPoint? geoPointValue;
   final ArrayValue? arrayValue;
   final MapValue? mapValue;

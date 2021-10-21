@@ -28,7 +28,7 @@ class DocumentSnapshot {
   // SnapshotMetadata get metadata => SnapshotMetadata._(_delegate.metadata);
 
   /// Contains all the data of this [DocumentSnapshot].
-  Map<String, dynamic>? data() => _data;
+  Map<String, dynamic> data() => _data ?? {};
 
   /// Gets a nested field by [String] or [FieldPath] from this [DocumentSnapshot].
   ///

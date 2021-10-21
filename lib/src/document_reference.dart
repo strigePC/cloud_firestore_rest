@@ -74,7 +74,7 @@ class DocumentReference {
         id,
         true,
         this,
-        res.fields!.map((key, value) => MapEntry(key, value.decode)),
+        res.fields?.map((key, value) => MapEntry(key, value.decode)),
       );
     } on FirebaseException catch (e) {
       if (e.code == '404') {

@@ -677,8 +677,9 @@ Value _$ValueFromJson(Map<String, dynamic> json) {
     booleanValue: json['booleanValue'] as bool?,
     stringValue: json['stringValue'] as String?,
     referenceValue: json['referenceValue'] as String?,
-    geoPointValue: GeoFirePoint._geoPointFromJsonNullable(
-        json['geoPointValue'] as GeoPoint?),
+    geoPointValue: json['geoPointValue'] == null
+        ? null
+        : GeoPoint.fromJson(json['geoPointValue'] as Map<String, dynamic>),
   );
 }
 
@@ -725,23 +726,27 @@ Map<String, dynamic> _$MapValueToJson(MapValue instance) {
   return val;
 }
 
+GeoPoint _$GeoPointFromJson(Map<String, dynamic> json) {
+  return GeoPoint(
+    (json['latitude'] as num).toDouble(),
+    (json['longitude'] as num).toDouble(),
+  );
+}
+
+Map<String, dynamic> _$GeoPointToJson(GeoPoint instance) => <String, dynamic>{
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+    };
+
 GeoFirePoint _$GeoFirePointFromJson(Map<String, dynamic> json) {
   return GeoFirePoint(
-    GeoFirePoint._geoPointFromJson(json['geopoint'] as GeoPoint),
+    GeoFirePoint._geoFromGeo(json['geopoint'] as GeoPoint),
     json['geohash'] as String,
   );
 }
 
-Map<String, dynamic> _$GeoFirePointToJson(GeoFirePoint instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('geopoint', GeoFirePoint._geoPointToJson(instance.geopoint));
-  val['geohash'] = instance.geohash;
-  return val;
-}
+Map<String, dynamic> _$GeoFirePointToJson(GeoFirePoint instance) =>
+    <String, dynamic>{
+      'geopoint': instance.geopoint.toJson(),
+      'geohash': instance.geohash,
+    };
